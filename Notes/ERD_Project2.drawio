@@ -1,0 +1,75 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="R5LbQMl85gt2XvBQPd2T">
+    <mxGraphModel dx="1067" dy="394" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- UsersTable (new) -->
+        <mxCell id="aSbbSWQWyvlw1YVJnwkd-3" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="UsersTable (NEW)" vertex="1">
+          <mxGeometry height="160" width="320" x="-270" y="179" as="geometry" />
+        </mxCell>
+        <mxCell id="aSbbSWQWyvlw1YVJnwkd-4" parent="aSbbSWQWyvlw1YVJnwkd-3" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ UserID (int, identity) (PK)&lt;div&gt;+ Username (varchar(50)) (unique)&lt;/div&gt;&lt;div&gt;+ Password (varchar(100))&lt;/div&gt;&lt;div&gt;+ FirstName (varchar(50))&lt;/div&gt;&lt;div&gt;+ LastName (varchar(50))&lt;/div&gt;&lt;div&gt;+ Email (varchar(100))&lt;/div&gt;&lt;div&gt;+ Phone (varchar(20))&lt;/div&gt;&lt;div&gt;+ UserType (varchar(20))&lt;/div&gt;" vertex="1">
+          <mxGeometry height="134" width="320" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- RestaurantTable (existing) -->
+        <mxCell id="tbl-restaurant" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="RestaurantTable" vertex="1">
+          <mxGeometry height="270" width="320" x="230" y="179" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl-restaurant-cols" parent="tbl-restaurant" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ RestaurantID (int, identity) (PK)&lt;div&gt;+ RestaurantName (varchar(100))&lt;/div&gt;&lt;div&gt;+ RestaurantAddress (varchar(100))&lt;/div&gt;&lt;div&gt;+ RestaurantCity (varchar(50))&lt;/div&gt;&lt;div&gt;+ RestaurantState (varchar(2))&lt;/div&gt;&lt;div&gt;+ RestaurantCuisine (varchar(50))&lt;/div&gt;&lt;div&gt;+ RestaurantDescription (varchar(max))&lt;/div&gt;&lt;div&gt;+ RestaurantWebsite (varchar(200))&lt;/div&gt;&lt;div&gt;+ RestaurantSocialMedia (varchar(200))&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#999999&quot;&gt;+ RestaurantImage (varchar(500)) (unused P2)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;+ RestaurantHoursOfOperation (varchar(200))&lt;/div&gt;&lt;div&gt;+ RestaurantPhone (varchar(20))&lt;/div&gt;&lt;div&gt;+ RestaurantOwner (varchar(100))&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ RepresentativeUserID (int) (FK → UsersTable) (NEW)&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="244" width="320" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- ReviewsTable (existing) -->
+        <mxCell id="tbl-reviews" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="ReviewsTable" vertex="1">
+          <mxGeometry height="304" width="320" x="730" y="179" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl-reviews-cols" parent="tbl-reviews" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ ReviewID (int, identity) (PK)&lt;div&gt;+ RestaurantID (int) (FK → RestaurantTable)&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#999999&quot;&gt;+ ReviewerName (varchar(100)) (unused P2)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;+ ReviewText (varchar(max))&lt;/div&gt;&lt;div&gt;+ FoodRating (int)&lt;/div&gt;&lt;div&gt;+ ServiceRating (int)&lt;/div&gt;&lt;div&gt;+ PriceRating (int)&lt;/div&gt;&lt;div&gt;+ ReviewDate (datetime) (= visit date/time)&lt;/div&gt;&lt;div&gt;+ HelpfulCount (int)&lt;/div&gt;&lt;div&gt;+ NotHelpfulCount (int)&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ ReviewUserID (int) (FK → UsersTable) (NEW)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ AtmosphereRating (int) (NEW)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ ReviewImage (varbinary(max)) (NEW)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ ReviewImageType (varchar(50)) (NEW)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ ResponseText (varchar(max)) (NEW)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#1b8a3a&quot;&gt;+ ResponseDate (datetime) (NEW)&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="278" width="320" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- RestaurantImages (new) -->
+        <mxCell id="tbl-images" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="RestaurantImages (NEW)" vertex="1">
+          <mxGeometry height="152" width="320" x="230" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl-images-cols" parent="tbl-images" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ ImageID (int, identity) (PK)&lt;div&gt;+ RestaurantID (int) (FK → RestaurantTable)&lt;/div&gt;&lt;div&gt;+ ImageData (varbinary(max))&lt;/div&gt;&lt;div&gt;+ ImageContentType (varchar(50))&lt;/div&gt;&lt;div&gt;+ Caption (varchar(200))&lt;/div&gt;&lt;div&gt;+ ImageCategory (varchar(20))&lt;/div&gt;&lt;div&gt;+ UploadDate (datetime)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="126" width="320" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- Reservations (new) -->
+        <mxCell id="tbl-reservations" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Reservations (NEW)" vertex="1">
+          <mxGeometry height="218" width="320" x="-270" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl-reservations-cols" parent="tbl-reservations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ ReservationID (int, identity) (PK)&lt;div&gt;+ RestaurantID (int) (FK → RestaurantTable)&lt;/div&gt;&lt;div&gt;+ UserID (int, NULL allowed) (FK → UsersTable)&lt;/div&gt;&lt;div&gt;+ ContactName (varchar(100))&lt;/div&gt;&lt;div&gt;+ ContactPhone (varchar(20))&lt;/div&gt;&lt;div&gt;+ ContactEmail (varchar(100))&lt;/div&gt;&lt;div&gt;+ ReservationDateTime (datetime)&lt;/div&gt;&lt;div&gt;+ PartySize (int)&lt;/div&gt;&lt;div&gt;+ SpecialRequests (varchar(500))&lt;/div&gt;&lt;div&gt;+ Status (varchar(20))&lt;/div&gt;&lt;div&gt;+ CreatedDate (datetime)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="192" width="320" y="26" as="geometry" />
+        </mxCell>
+
+        <!-- Relationships (start = "one" side, end = "many" side) -->
+        <mxCell id="rel-1" parent="1" source="aSbbSWQWyvlw1YVJnwkd-3" target="tbl-restaurant" edge="1" value="manages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToOne;endFill=0;startSize=10;endSize=10;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.15;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-2" parent="1" source="aSbbSWQWyvlw1YVJnwkd-3" target="tbl-reviews" edge="1" value="writes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;startSize=10;endSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-110" y="120" />
+              <mxPoint x="890" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-3" parent="1" source="aSbbSWQWyvlw1YVJnwkd-3" target="tbl-reservations" edge="1" value="books" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;startFill=0;endArrow=ERzeroToMany;endFill=0;startSize=10;endSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-4" parent="1" source="tbl-restaurant" target="tbl-reviews" edge="1" value="receives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;startSize=10;endSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.45;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-5" parent="1" source="tbl-restaurant" target="tbl-images" edge="1" value="has" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;startSize=10;endSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-6" parent="1" source="tbl-restaurant" target="tbl-reservations" edge="1" value="receives" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;startSize=10;endSize=10;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;fontStyle=2;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

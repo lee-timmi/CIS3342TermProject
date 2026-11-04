@@ -1,0 +1,18 @@
+# ---- Visual Studio / build output (regenerated automatically) ----
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+UpgradeLog*.htm
+
+# ---- NuGet packages (Visual Studio restores these automatically on build) ----
+packages/
+
+# ---- Per-computer database settings: contains your password and the
+#      University vs. Home connection choice. Each PC keeps its own copy. ----
+Utilities/Connection.cs
+
+# ---- OneDrive sync-conflict duplicates (not part of the project) ----
+*-1.aspx
+*.aspx-1.cs
