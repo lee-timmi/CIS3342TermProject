@@ -1,7 +1,7 @@
 # CIS3342 Projects
 
 Coursework for **CIS 3342 – Server-Side Web Application Development** (Temple University, Fall 2026).
-Built with C#, ASP.NET Web Forms, SQL Server, and Bootstrap.
+Built with C#, ASP.NET Web Forms, ASP.NET Core MVC, SQL Server, and Bootstrap.
 
 🌐 **Live homepage:** https://cis-iis2.temple.edu/Fall2026/CIS3342_tut54751/index.html
 
@@ -164,8 +164,75 @@ The editable source diagram is [`Notes/ERD_Project2.drawio`](Notes/ERD_Project2.
 
 ---
 
-## Project 3 – TBD
-**Status:** 🔲 Not started (partner project)
+## Term Project – Honest Plates (ASP.NET Core MVC + Web APIs)
+**Status:** 🚧 In progress · **Due:** Thu 12/3/2026, 11:59 PM
+**Team:** Thimmy Le · Tri Le
+**Project board:** https://github.com/users/lee-timmi/projects/2
+
+Projects 1 and 2 rebuilt in **ASP.NET Core MVC** (Razor Views, no Razor Pages), with our own **Restaurants API** and **Reviews API**, the **Documenu** menu API, encrypted logins, security questions, email verification, serialization, and one learning opportunity each (review sentiment with ML.NET and rating trend charts). Every database table and stored procedure starts with `TP_`.
+
+---
+
+## How We Work
+
+### Sprints
+One-week sprints, **Tuesday to Monday**, so each Tuesday lab ends one sprint and plans the next.
+
+| Sprint | Dates | Focus |
+|--------|-------|-------|
+| 1 | Nov 3 – Nov 9 | Setup, `TP_` tables, navigation, styling (carried into Sprint 2) |
+| 2 | Nov 10 – Nov 16 | Search, profile, dashboards, login, registration, first API methods |
+| 3 | Nov 17 – Nov 23 | Feedback meeting (11/19), rep and reviewer tools, menu API, security, serialization |
+| 4 | Nov 24 – Nov 30 | Learning opportunities, apply feedback, fill in 30+ restaurants, full test pass |
+| Final | Dec 1 – Dec 3 | Publish to `TermProject`, Canvas comment, submit |
+
+Who does what and when is in our Team Responsibilities document. Every feature is split in half, and each of us does the database, API, and pages for our half.
+
+### The board
+Each task is an issue on the [project board](https://github.com/users/lee-timmi/projects/2), with an owner, due date, sprint, size, and a **Done when** checklist.
+
+**Backlog → Ready → In Progress → In Review → Done**
+
+| Column | Meaning |
+|--------|---------|
+| Backlog | Planned for a later sprint |
+| Ready | In this sprint, not started |
+| In Progress | Being worked on (2 cards at most per person) |
+| In Review | Pull request open; partner is checking the **Done when** list |
+| Done | Every box checked and the pull request merged |
+
+### Making a change
+`main` is locked: nobody pushes to it directly, and every change needs the other partner's approval. In Visual Studio:
+
+1. **Start:** switch to `main` and **Git → Pull** to get the latest code.
+2. **Branch:** **Git → New Branch**, named after the issue (e.g. `13-search-form`).
+3. **Work:** commit and push to your branch as often as you like.
+4. **Finish:** open a pull request on GitHub, write `Closes #13` in it, and move the card to **In Review**.
+5. **Review:** your partner runs the branch and checks off each **Done when** box.
+   - All pass: they approve and merge, and the card moves to **Done**.
+   - Something fails: they comment, and you fix it on the same branch.
+6. **Next task:** switch back to `main`, pull, and start again at step 2.
+
+**One task = one branch = one pull request.**
+
+### Commit messages
+```
+[{type} #{issue}]_[{scope}] : {what changed} / [{Day} {MM/DD/YYYY} {h:mm AM/PM}]
+```
+Types: `feat`, `fix`, `refactor`, `docs`, `chore`. The issue number links the commit to its task.
+Example: `[feat #13]_[search] : add cuisine checkboxes and city/state dropdowns / [Wed 11/11/2026 3:15 PM]`
+
+### Definition of Done
+A task is done when its **Done when** list passes, plus for every coding task:
+- All database work goes through `TP_` stored procedures (no SQL text in C#)
+- Razor Views only, with the logic in classes, not in the controllers
+- Server-side validation and clear error messages; the app never crashes
+- Tested and approved by the partner
+- Its Canvas comment line is written (how it was done + the page URL)
+
+### First-time setup
+1. Install [Git LFS](https://git-lfs.com) (the textbooks in `Resources/` use it), then clone the repo in Visual Studio.
+2. Add your own database login file. Connection settings are git-ignored and stay on each computer. Never commit them.
 
 ---
 
