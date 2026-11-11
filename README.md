@@ -63,6 +63,8 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Copy Project 2 reviews, photos, reservations | B. Database | Thimmy (Tri's item) | ✅ Wed 11/11 |
 | Navigation for visitors | A. Setup | Thimmy | ✅ Wed 11/11 |
 | Site colors, fonts, buttons | A. Setup | Thimmy | ✅ Wed 11/11 |
+| Search form + SP search restaurants + SP get cuisines | C. Home and Search | Thimmy | ✅ Wed 11/11 |
+| Home banner | C. Home and Search | Thimmy | ✅ Wed 11/11 |
 
 ---
 

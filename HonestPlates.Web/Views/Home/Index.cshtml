@@ -1,8 +1,88 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using System.Data
+@{
+    ViewData["Title"] = "Honest Plates - HOME";
+
+    List<string> cuisines = ViewBag.Cuisines;
+    DataTable locations = ViewBag.Locations;
+
+    List<string> selectedCuisines = ViewBag.SelectedCuisines ?? new List<string>();
+    string selectedLocation = ViewBag.SelectedLocation ?? "";
+
+    // Each state once (in order), with its restaurant count, for the dropdown headings
+    List<string> states = new List<string>();
+    List<string> stateCounts = new List<string>();
+    foreach (DataRow row in locations.Rows)
+    {
+        string state = row["RestaurantState"].ToString();
+        if (!states.Contains(state))
+        {
+            states.Add(state);
+            stateCounts.Add(row["StateCount"].ToString());
+        }
+    }
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Home.css" asp-append-version="true" />
+}
+
+<section id="search" class="hero hero-photo">
+    <p class="hero-eyebrow">Find the best</p>
+    <h1 class="hero-headline">Restaurants <span>near you</span></h1>
+    <p class="hero-sub">Honest ratings for food, service and atmosphere, from people who ate there.</p>
+
+    <form method="get" asp-action="Search" class="search-box">
+        <div class="cuisine-pills">
+            @for (int i = 0; i < cuisines.Count; i++)
+            {
+                <input type="checkbox" id="cuisine@(i)" name="cuisines" value="@cuisines[i]"
+                       checked="@selectedCuisines.Contains(cuisines[i])" />
+                <label for="cuisine@(i)">@cuisines[i]</label>
+            }
+        </div>
+
+        <div class="search-row">
+            <select name="location" class="search-input">
+            <option value="">Any location</option>
+            @for (int s = 0; s < states.Count; s++)
+            {
+                string allValue = "|" + states[s];
+                <optgroup label="@states[s]">
+                    <option value="@allValue" selected="@(allValue == selectedLocation)">All of @states[s] (@stateCounts[s])</option>
+                    @foreach (DataRow row in locations.Rows)
+                    {
+                        if (row["RestaurantState"].ToString() == states[s])
+                        {
+                            string value = row["RestaurantCity"] + "|" + states[s];
+                            <option value="@value" selected="@(value == selectedLocation)">@row["RestaurantCity"], @states[s] (@row["CityCount"])</option>
+                        }
+                    }
+                </optgroup>
+            }
+            </select>
+
+            <button type="submit" class="btn-hp">Search</button>
+            <a asp-action="Index" class="btn-hp btn-hp-outline">Clear</a>
+        </div>
+        <p class="search-hint">Pick one or more cuisines, a city, a state, or any mix. Clear starts over.</p>
+
+        @if (ViewBag.Error != null)
+        {
+            <p class="search-error">@ViewBag.Error</p>
+        }
+    </form>
+</section>
+
+@if (ViewBag.Results != null)
+{
+    DataTable results = ViewBag.Results;
+    <section class="results-section">
+        <p class="results-count">@results.Rows.Count restaurant(s) found</p>
+        <ul>
+            @foreach (DataRow row in results.Rows)
+            {
+                <li>@row["RestaurantName"] (@row["RestaurantCuisine"], @row["RestaurantCity"], @row["RestaurantState"])</li>
+            }
+        </ul>
+    </section>
+}
