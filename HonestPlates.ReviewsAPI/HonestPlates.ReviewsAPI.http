@@ -1,0 +1,3 @@
+@HonestPlates.ReviewsAPI_HostAddress = http://localhost:5045
+
+# Test requests for this API go here (one per method), separated by ###

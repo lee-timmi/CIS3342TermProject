@@ -10,18 +10,5 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <!-- Project 2 classes copied over but not converted to .NET 8 yet.
-       They're skipped by the build. Delete a class's line once it's converted. -->
-  <ItemGroup>
-    <Compile Remove="Models\ListHelper.cs" />
-    <Compile Remove="Models\Rating.cs" />
-    <Compile Remove="Models\Reservation.cs" />
-    <Compile Remove="Models\Restaurant.cs" />
-    <Compile Remove="Models\RestaurantImage.cs" />
-    <Compile Remove="Models\Review.cs" />
-    <Compile Remove="Models\UserAccount.cs" />
-    <Compile Remove="Models\Validation.cs" />
-    <None Include="Models\ListHelper.cs;Models\Rating.cs;Models\Reservation.cs;Models\Restaurant.cs;Models\RestaurantImage.cs;Models\Review.cs;Models\UserAccount.cs;Models\Validation.cs" />
-  </ItemGroup>
 
 </Project>

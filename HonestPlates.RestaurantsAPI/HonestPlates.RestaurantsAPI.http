@@ -1,0 +1,3 @@
+@HonestPlates.RestaurantsAPI_HostAddress = http://localhost:5256
+
+# Test requests for this API go here (one per method), separated by ###
