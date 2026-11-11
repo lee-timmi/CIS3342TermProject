@@ -179,3 +179,54 @@ The editable source diagram is [`Notes/ERD_Project2.drawio`](Notes/ERD_Project2.
 | `LabDemo1/`, `LabDemo2/` | In-class lab demos |
 | `Notes/` | ERD and project planning |
 | `Resources/` | Course textbooks (PDFs, stored with Git LFS) |
+
+---
+
+## Team Workflow (Term Project)
+We both commit straight to `main`. No branches, no pull requests, no reviews.
+
+### One-time setup
+```bash
+git config --global pull.rebase true
+git config --global rebase.autoStash true
+```
+
+### Rules
+1. Pull before you start and before you push.
+2. Only push code that builds and runs.
+3. Commit small and often.
+4. Text your partner before editing a shared file (`Program.cs`, the database helper, shared classes, SQL scripts).
+5. Never force-push.
+
+### Every day
+```bash
+git pull
+# code and test
+git add .
+git commit -m "<message>"
+git pull
+git push
+```
+
+### When your partner pushes while you're mid-feature
+**Person who finished:**
+1. `git pull`
+2. `git push`
+3. Text your partner that it's pushed.
+
+**Person still working:**
+1. `git add .`
+2. `git commit -m "WIP <feature>"` (saves your progress locally; don't push it)
+3. `git pull` (adds your partner's work under yours)
+4. Keep working and testing.
+5. When done: `git add .`, then `git commit --amend -m "<real message>"`, `git pull`, `git push`.
+
+### If `git pull` shows a conflict
+1. Open the file and keep the right code between `<<<<<<<` and `>>>>>>>`. Delete the markers.
+2. `git add <file>`
+3. `git rebase --continue` (or `git rebase --abort` to cancel)
+
+### Issues
+- One issue per requirement, with a checklist of tasks inside. Each task has an owner.
+- In the commit body, write `Refs #12` while working and `Closes #12` on the last commit.
+- Every task: database work through `TP_` stored procedures, logic in classes (not controllers), server-side validation, and a Canvas comment line.
