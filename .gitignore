@@ -1,4 +1,4 @@
-# ---- Visual Studio / build output (regenerated automatically) ----
+﻿# ---- Visual Studio / build output (regenerated automatically) ----
 .vs/
 [Bb]in/
 [Oo]bj/
@@ -16,3 +16,5 @@ Utilities/Connection.cs
 # ---- OneDrive sync-conflict duplicates (not part of the project) ----
 *-1.aspx
 *.aspx-1.cs
+
+HonestPlates.Data/Connection.cs
