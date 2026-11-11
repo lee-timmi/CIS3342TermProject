@@ -59,6 +59,8 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Two API projects + shared model classes | A. Setup | Thimmy (Tri's item) | ✅ Wed 11/11 |
 | DB: Users, Security Questions, Restaurants, Restaurant Hours | B. Database | Thimmy | ✅ Wed 11/11 |
 | Copy Project 2 restaurants, hours, users | B. Database | Thimmy | ✅ Wed 11/11 |
+| DB: Reviews, Restaurant Photos, Reservations, Menu Items | B. Database | Thimmy (Tri's item) | ✅ Wed 11/11 |
+| Copy Project 2 reviews, photos, reservations | B. Database | Thimmy (Tri's item) | ✅ Wed 11/11 |
 
 ---
 
