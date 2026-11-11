@@ -192,6 +192,16 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 
 **Data:** 30+ restaurants with every profile field filled in, carried over from Project 2 and expanded.
 
+### Team Responsibilities
+📄 [CIS3342 Team Responsibilities - Thimmy Le & Tri Le](https://docs.google.com/document/d/1_CpPLqnRtl3_PIvtlF6skocC61DojvC4bnua_L42f-4/edit?usp=sharing) (Google Doc: who does what, and when)
+
+**Completed:**
+| Responsibility | Section | Done by | Completed |
+|---|---|---|---|
+| GitHub repo + project board | A. Setup | Thimmy | ✅ |
+| Board columns, labels, Sprint 1 tasks | A. Setup | Tri | ✅ |
+| MVC web project + database helper class | A. Setup | Thimmy | ✅ Wed 11/11 |
+
 ---
 
 ## Repository Layout
