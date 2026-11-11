@@ -56,6 +56,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | GitHub repo + project board | A. Setup | Thimmy | ✅ |
 | Board columns, labels, Sprint 1 tasks | A. Setup | Tri | ✅ |
 | MVC web project + database helper class | A. Setup | Thimmy | ✅ Wed 11/11 |
+| Two API projects + shared model classes | A. Setup | Thimmy (Tri's item) | ✅ Wed 11/11 |
 
 ---
 
