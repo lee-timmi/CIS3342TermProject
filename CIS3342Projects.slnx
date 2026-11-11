@@ -2,8 +2,6 @@
   <Project Path="HonestPlates.Data/HonestPlates.Data.csproj" />
   <Project Path="HonestPlates.Web/HonestPlates.Web.csproj" />
   <Project Path="Lab01_Simple_Homepage/CIS3342Projects.csproj" Id="59cd314d-afe4-4bc3-867a-c6834e8766a3" />
-  <Project Path="LabDemo1/LabDemo1.csproj" Id="a30b78be-94dd-4c6c-8345-6eed5ddb46e0" />
-  <Project Path="LabDemo2/LabDemo2.csproj" Id="8ffa20ca-3a61-4e84-8f76-b5e20b41d5d7" />
   <Project Path="RestaurantReview/RestaurantReview.csproj" Id="7b2ecb78-3514-4c48-a615-c65c25fa5f14" />
   <Project Path="Utilities/Utilities.csproj" Id="b02b8a09-5e85-42a7-938c-d2cf30c22c68" />
 </Solution>

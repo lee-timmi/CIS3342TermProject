@@ -201,6 +201,5 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | `Utilities/` | Shared database connection class (`Connection.cs` is git-ignored and kept locally on each computer) |
 | `Database/` | Stored procedures (`StoredProcedures/`) |
 | `Lab01_Simple_Homepage/` | Course homepage (`index.html`) |
-| `LabDemo1/`, `LabDemo2/` | In-class lab demos |
 | `Notes/` | ERD and project planning |
 | `Resources/` | Course textbooks (PDFs, stored with Git LFS) |
