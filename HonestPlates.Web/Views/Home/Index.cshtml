@@ -81,7 +81,10 @@
         <ul>
             @foreach (DataRow row in results.Rows)
             {
-                <li>@row["RestaurantName"] (@row["RestaurantCuisine"], @row["RestaurantCity"], @row["RestaurantState"])</li>
+                <li>
+                    <a asp-controller="Restaurant" asp-action="Profile" asp-route-id="@row["RestaurantID"]">@row["RestaurantName"]</a>
+                    (@row["RestaurantCuisine"], @row["RestaurantCity"], @row["RestaurantState"])
+                </li>
             }
         </ul>
     </section>

@@ -1,0 +1,100 @@
+﻿@using System.Data
+@model HonestPlates.Data.Models.Restaurant
+@{
+    ViewData["Title"] = Model != null ? Model.Name : "Restaurant";
+    DataTable hours = ViewBag.Hours;
+    int today = (int)DateTime.Now.DayOfWeek;   // 0 = Sunday, same numbering as the table
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="text-center mt-5">
+        <p class="text-danger">@ViewBag.Error</p>
+        <a asp-controller="Home" asp-action="Index" class="btn-hp">Back to search</a>
+    </div>
+}
+else
+{
+    <div class="profile-hero">
+        <img src="~/images/hero.jpg" alt="@Model.Name" class="profile-hero-img" />
+        <div class="profile-hero-overlay">
+            <span class="profile-cuisine-tag">@Model.Cuisine</span>
+            <h1 class="profile-name">@Model.Name</h1>
+        </div>
+    </div>
+
+    <div class="profile-body">
+        <div class="profile-info-grid">
+            <div class="profile-about">
+                <h2 class="section-heading">About</h2>
+                <p class="profile-description">@Model.Description</p>
+            </div>
+
+            <aside class="profile-details">
+                <div class="detail-item">
+                    <span class="detail-label">Address</span>
+                    <span class="detail-value">@Model.Street, @Model.City, @Model.State @Model.Zip</span>
+                </div>
+
+                @if (Model.Phone != "")
+                {
+                    <div class="detail-item">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">@Model.Phone</span>
+                    </div>
+                }
+
+                <div class="detail-item">
+                    <span class="detail-label">Hours</span>
+                    @if (hours.Rows.Count == 0)
+                    {
+                        <span class="detail-value">Hours not listed</span>
+                    }
+                    else
+                    {
+                        <table class="hours-table">
+                            @foreach (DataRow row in hours.Rows)
+                            {
+                                int day = Convert.ToInt32(row["DayOfWeek"]);
+                                <tr class="@(day == today ? "hours-today" : null)">
+                                    <td>@((DayOfWeek)day)</td>
+                                    <td>@Model.FormatHours(row)</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+
+                @if (Model.Owner != "")
+                {
+                    <div class="detail-item">
+                        <span class="detail-label">Owner</span>
+                        <span class="detail-value">@Model.Owner</span>
+                    </div>
+                }
+
+                @if (Model.Website.StartsWith("http://") || Model.Website.StartsWith("https://"))
+                {
+                    <div class="detail-item">
+                        <span class="detail-label">Website</span>
+                        <a class="detail-value" href="@Model.Website" target="_blank">Visit website</a>
+                    </div>
+                }
+
+                @if (Model.SocialMedia.StartsWith("http://") || Model.SocialMedia.StartsWith("https://"))
+                {
+                    <div class="detail-item">
+                        <span class="detail-label">Social Media</span>
+                        <a class="detail-value" href="@Model.SocialMedia" target="_blank">Follow us</a>
+                    </div>
+                }
+            </aside>
+        </div>
+
+        @* Tri: the photo gallery and the reviews go below this line *@
+    </div>
+}

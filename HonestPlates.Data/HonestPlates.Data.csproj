@@ -16,12 +16,11 @@
     <Compile Remove="Models\ListHelper.cs" />
     <Compile Remove="Models\Rating.cs" />
     <Compile Remove="Models\Reservation.cs" />
-    <Compile Remove="Models\Restaurant.cs" />
     <Compile Remove="Models\RestaurantImage.cs" />
     <Compile Remove="Models\Review.cs" />
     <Compile Remove="Models\UserAccount.cs" />
     <Compile Remove="Models\Validation.cs" />
-    <None Include="Models\ListHelper.cs;Models\Rating.cs;Models\Reservation.cs;Models\Restaurant.cs;Models\RestaurantImage.cs;Models\Review.cs;Models\UserAccount.cs;Models\Validation.cs" />
+    <None Include="Models\ListHelper.cs;Models\Rating.cs;Models\Reservation.cs;Models\RestaurantImage.cs;Models\Review.cs;Models\UserAccount.cs;Models\Validation.cs" />
   </ItemGroup>
 
 </Project>
