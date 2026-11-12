@@ -1,0 +1,37 @@
+﻿@* Came from Murach's ASP.NET Core MVC, Chapter 2 Page 59 on strongly-typed views. *@
+@model HonestPlates.Web.Models.VerifyForm
+@{
+    ViewData["Title"] = "Verify Your Account";
+}
+
+<div class="container my-5" style="max-width: 480px;">
+    <h1 class="mb-3">Verify Your Account</h1>
+
+    @* The message from Register ("We emailed a 6-digit code...").
+       Came from Murach's ASP.NET Core MVC, Chapter 8 Page 307 on TempData. *@
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+
+    <p>Enter the 6-digit code we emailed you, or click the link in that email.</p>
+
+    @* Came from Murach's ASP.NET Core MVC, Chapter 2 Page 75 on forms with validation messages. *@
+    <form asp-action="Verify" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label">Username</label>
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Code" class="form-label">Verification code</label>
+            <input asp-for="Code" class="form-control" inputmode="numeric" placeholder="e.g. 482913" />
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-hp">Verify</button>
+    </form>
+</div>

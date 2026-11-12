@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Net;
 
 namespace HonestPlates.Data.Models
 {
@@ -30,6 +31,7 @@ namespace HonestPlates.Data.Models
         public string Phone { get; set; } = "";
         public string UserType { get; set; } = "";
 
+        public string VerificationCode { get; set; } = "";
         public string Question1 { get; set; } = "";
         public string Answer1 { get; set; } = "";
         public string Question2 { get; set; } = "";
@@ -71,6 +73,7 @@ namespace HonestPlates.Data.Models
                 registerCMD.Parameters.AddWithValue("@Phone", Phone);
 
             registerCMD.Parameters.AddWithValue("@UserType", UserType);
+            registerCMD.Parameters.AddWithValue("@VerificationCode", VerificationCode);
             registerCMD.Parameters.AddWithValue("@Question1", Question1);
             registerCMD.Parameters.AddWithValue("@Answer1", Answer1);
             registerCMD.Parameters.AddWithValue("@Question2", Question2);
@@ -80,6 +83,42 @@ namespace HonestPlates.Data.Models
 
             UserID = Convert.ToInt32(registerDB.ExecuteScalarFunction(registerCMD));
             return UserID > 0;
+        }
+
+        // Makes a random 6-digit code, e.g. "482913"
+        // Came from Murach's ASP.NET Core MVC, Chapter 20 Page 741 on the Random class.
+        public void MakeVerificationCode()
+        {
+            Random random = new Random();
+            VerificationCode = random.Next(100000, 1000000).ToString();
+        }
+
+        // Emails the code and the verify link. Throws an exception if the email can't be sent.
+        // Came from Project 2 (Prof. Pascucci's Email class); not in the textbooks.
+        public void SendVerificationEmail(string verifyLink)
+        {
+            string body = "<p>Hi " + WebUtility.HtmlEncode(FirstName) + ",</p>"
+                + "<p>Welcome to Honest Plates! Your verification code is <b>" + VerificationCode + "</b>.</p>"
+                + "<p><a href=\"" + verifyLink + "\">Click here to verify your account</a>, "
+                + "or enter the code on the Verify page.</p>";
+
+            HonestPlates.Data.Email objEmail = new HonestPlates.Data.Email();
+            objEmail.SendMail(Email, "tut54751@temple.edu", "Verify your Honest Plates account", body);
+        }
+
+        // Marks the account verified. Returns false when the username/code don't match
+        // (or it was already verified).
+        // Came from Project 2 (ASP.NET 4.6 book, scanned, no page): DoUpdateUsingCmdObj returns the rows changed.
+        public bool Verify(string username, string code)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand sqlCMD = new SqlCommand();
+            sqlCMD.CommandType = CommandType.StoredProcedure;
+            sqlCMD.CommandText = "TP_VerifyAccount";
+            sqlCMD.Parameters.AddWithValue("@Username", username);
+            sqlCMD.Parameters.AddWithValue("@Code", code);
+
+            return db.DoUpdateUsingCmdObj(sqlCMD) == 1;
         }
     }
 }
