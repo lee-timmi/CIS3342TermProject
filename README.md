@@ -66,6 +66,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Search form + SP search restaurants + SP get cuisines | C. Home and Search | Thimmy | ✅ Wed 11/11 |
 | Home banner | C. Home and Search | Thimmy | ✅ Wed 11/11 |
 | Profile details + weekly hours + SP get restaurant + SP get hours | E. Dashboards and Profile | Thimmy | ✅ Thu 11/12 |
+| Registration page + 3 security questions + SP add user + SP check username | D. Accounts and Login | Thimmy | ✅ Thu 11/12 |
 
 ---
 

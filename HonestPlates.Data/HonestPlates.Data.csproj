@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -18,9 +18,8 @@
     <Compile Remove="Models\Reservation.cs" />
     <Compile Remove="Models\RestaurantImage.cs" />
     <Compile Remove="Models\Review.cs" />
-    <Compile Remove="Models\UserAccount.cs" />
     <Compile Remove="Models\Validation.cs" />
-    <None Include="Models\ListHelper.cs;Models\Rating.cs;Models\Reservation.cs;Models\RestaurantImage.cs;Models\Review.cs;Models\UserAccount.cs;Models\Validation.cs" />
+    <None Include="Models\ListHelper.cs;Models\Rating.cs;Models\Reservation.cs;Models\RestaurantImage.cs;Models\Review.cs;Models\Validation.cs" />
   </ItemGroup>
 
 </Project>

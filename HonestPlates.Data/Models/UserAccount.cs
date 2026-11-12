@@ -1,88 +1,85 @@
-﻿using System;
-using Utilities;
-using System.Data.SqlClient;
-using System.Data;
+﻿using System.Data;
+using Microsoft.Data.SqlClient;
 
-namespace RestaurantReview
+namespace HonestPlates.Data.Models
 {
+    // One user account. Register fills the properties and calls Register();
+    // every database call goes through a TP_ stored procedure.
+    // (Login methods are added with the Login page.)
     public class UserAccount
     {
-        // Properties {UserID, Username, Password, First & Last Name, Email, Phone, UserType}
-        public int UserID { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string UserType { get; set; }
+        // The questions users pick from when they register (3 different ones)
+        public static readonly string[] QuestionChoices =
+        {
+            "What was the name of your first pet?",
+            "What city were you born in?",
+            "What is your mother's maiden name?",
+            "What was the name of your elementary school?",
+            "What was the make of your first car?",
+            "What is your favorite food?",
+            "What was your childhood nickname?",
+            "In what city did your parents meet?"
+        };
 
-        // Returns true if the username exists
+        public int UserID { get; set; }
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string UserType { get; set; } = "";
+
+        public string Question1 { get; set; } = "";
+        public string Answer1 { get; set; } = "";
+        public string Question2 { get; set; } = "";
+        public string Answer2 { get; set; } = "";
+        public string Question3 { get; set; } = "";
+        public string Answer3 { get; set; } = "";
+
+        // True if another account already has this username
         public bool UsernameExists(string username)
         {
-            DBConnect dbConnect = new DBConnect();
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = "CheckUsernameExists";
-            cmd.Parameters.AddWithValue("@Username", username);
+            DBConnect usernameDB = new DBConnect();
+            SqlCommand usernameCMD = new SqlCommand();
+            usernameCMD.CommandType = CommandType.StoredProcedure;
+            usernameCMD.CommandText = "TP_CheckUsernameExists";
+            usernameCMD.Parameters.AddWithValue("@Username", username);
 
-            DataSet dsCheck = dbConnect.GetDataSetUsingCmdObj(cmd);
-            int usernameCount = Convert.ToInt32(dsCheck.Tables[0].Rows[0]["UsernameCount"]);
-            return usernameCount > 0;
+            DataSet ds = usernameDB.GetDataSetUsingCmdObj(usernameCMD);
+            return Convert.ToInt32(ds.Tables[0].Rows[0]["UsernameCount"]) > 0;
         }
 
-        // Saves the user account to the database. Returns true if successful, false otherwise.
-        public bool RegisterUser()
+        // Saves the user and their 3 security ques
+        // Returns true and sets UserID when it worked.
+        public bool Register()
         {
-            DBConnect db = new DBConnect();
-            SqlCommand cmdAdd = new SqlCommand();
-            cmdAdd.CommandType = CommandType.StoredProcedure;
-            cmdAdd.CommandText = "AddUser";
-            cmdAdd.Parameters.AddWithValue("@Username", this.Username);
-            cmdAdd.Parameters.AddWithValue("@Password", this.Password);
-            cmdAdd.Parameters.AddWithValue("@FirstName", this.FirstName);
-            cmdAdd.Parameters.AddWithValue("@LastName", this.LastName);
-            cmdAdd.Parameters.AddWithValue("@Email", this.Email);
+            DBConnect registerDB = new DBConnect();
+            SqlCommand registerCMD = new SqlCommand();
+            registerCMD.CommandType = CommandType.StoredProcedure;
+            registerCMD.CommandText = "TP_AddUser";
+            registerCMD.Parameters.AddWithValue("@Username", Username);
+            registerCMD.Parameters.AddWithValue("@Password", Password);
+            registerCMD.Parameters.AddWithValue("@FirstName", FirstName);
+            registerCMD.Parameters.AddWithValue("@LastName", LastName);
+            registerCMD.Parameters.AddWithValue("@Email", Email);
 
-            // Phone is optional, an empty string will be stored if not provided
-            if (string.IsNullOrEmpty(Phone))
-            {
-                cmdAdd.Parameters.AddWithValue("@Phone", DBNull.Value);
-            } else
-            {
-                cmdAdd.Parameters.AddWithValue("@Phone", this.Phone);
-            }
+            // Phone is optional: send a real NULL
+            if (Phone == "")
+                registerCMD.Parameters.AddWithValue("@Phone", DBNull.Value);
+            else
+                registerCMD.Parameters.AddWithValue("@Phone", Phone);
 
-            cmdAdd.Parameters.AddWithValue("@UserType", this.UserType);
+            registerCMD.Parameters.AddWithValue("@UserType", UserType);
+            registerCMD.Parameters.AddWithValue("@Question1", Question1);
+            registerCMD.Parameters.AddWithValue("@Answer1", Answer1);
+            registerCMD.Parameters.AddWithValue("@Question2", Question2);
+            registerCMD.Parameters.AddWithValue("@Answer2", Answer2);
+            registerCMD.Parameters.AddWithValue("@Question3", Question3);
+            registerCMD.Parameters.AddWithValue("@Answer3", Answer3);
 
-            int rowsAffected = db.DoUpdateUsingCmdObj(cmdAdd);
-            return rowsAffected == 1;
-        }
-
-        // Validates the user login credentials. Returns true if valid, false otherwise.
-        public bool LoginValidate()
-        {
-            DBConnect dbLogin = new DBConnect();
-            SqlCommand cmdLogin = new SqlCommand();
-            cmdLogin.CommandType = CommandType.StoredProcedure;
-            cmdLogin.CommandText = "LoginUser";
-            cmdLogin.Parameters.AddWithValue("@Username", this.Username);
-            cmdLogin.Parameters.AddWithValue("@Password", this.Password);
-
-            DataSet dsLogin = dbLogin.GetDataSetUsingCmdObj(cmdLogin);
-
-            // If the dataset has no rows, the login is invalid
-            if (dsLogin.Tables[0].Rows.Count == 0)
-            {
-                return false;
-            }
-           
-            DataRow row = dsLogin.Tables[0].Rows[0];
-            this.UserID = Convert.ToInt32(row["UserID"]);
-            this.FirstName = row["FirstName"].ToString();
-            this.LastName = row["LastName"].ToString();
-            this.UserType = row["UserType"].ToString();
-            return true;
+            UserID = Convert.ToInt32(registerDB.ExecuteScalarFunction(registerCMD));
+            return UserID > 0;
         }
     }
 }
