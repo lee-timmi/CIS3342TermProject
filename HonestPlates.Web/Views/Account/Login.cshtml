@@ -1,5 +1,20 @@
-﻿@* Came from Murach's ASP.NET Core MVC, Chapter 8 Page 307 on TempData. *@
-@if (TempData["Message"] != null)
-{
-    <div class="alert alert-success">@TempData["Message"]</div>
+﻿@* PLACEHOLDER: Tri replaces this with the real Login form (username, password,
+   remember-me cookie). Keep the image and the TempData message when he does. *@
+@{
+    ViewData["Title"] = "Log In";
 }
+
+<div class="container my-5" style="max-width: 480px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    <h1 class="mb-3">Log In</h1>
+
+    @* Came from Murach's ASP.NET Core MVC, Chapter 8 Page 307 on TempData. *@
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">@TempData["Message"]</div>
+    }
+
+    <p>The login form is coming soon.</p>
+</div>

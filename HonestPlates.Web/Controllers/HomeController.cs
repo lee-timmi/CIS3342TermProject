@@ -25,11 +25,6 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
-    { 
-        return View();
-    }
-
     public IActionResult Search(List<string> cuisines, string location)
     {
         if (cuisines == null) cuisines = new List<string>();

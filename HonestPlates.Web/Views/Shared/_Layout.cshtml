@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@* Who is logged in (Tri's Login saves these three; empty when nobody is logged in).
+   Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on using session state in views. *@
+@{
+    int? userID = Context.Session.GetInt32("UserID");
+    string? firstName = Context.Session.GetString("FirstName");
+    string? userType = Context.Session.GetString("UserType");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,16 +31,35 @@
                 <a href="../index.html" class="btn-hp btn-hp-outline btn-hp-back">&larr; All Projects</a>
                 <a asp-controller="Home" asp-action="Index" class="nav-link-hp">Home</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="search" class="nav-link-hp">Search</a>
-                <a asp-controller="Account" asp-action="Login" class="nav-link-hp">Log In</a>
-                <a asp-controller="Account" asp-action="Register" class="btn-hp">Register</a>
+
+                @* Logged out: Log In + Register. Logged in: greeting by user type + Log Out.
+                   Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on using session state in views. *@
+                @if (userID == null)
+                {
+                    <a asp-controller="Account" asp-action="Login" class="nav-link-hp">Log In</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn-hp">Register</a>
+                }
+                else
+                {
+                    if (userType == "Representative")
+                    {
+                        @* Rep links go here once built: Dashboard, My Restaurant, Reservations *@
+                        <span class="nav-greeting">Hi, @firstName (Restaurant Rep)</span>
+                    }
+                    else
+                    {
+                        @* Reviewer links go here once built: Dashboard, My Reviews *@
+                        <span class="nav-greeting">Hi, @firstName (Reviewer)</span>
+                    }
+                    <a asp-controller="Account" asp-action="Logout" class="btn-hp">Log Out</a>
+                }
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
 
     <footer class="hp-footer">
         <div>Honest Plates &mdash; Restaurant Reviews &middot; CIS-3342 &middot; Temple University &middot; Fall 2026</div>

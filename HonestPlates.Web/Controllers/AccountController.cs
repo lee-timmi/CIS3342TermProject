@@ -170,5 +170,15 @@ namespace HonestPlates.Web.Controllers
         {
             return View();
         }
+
+        // Logs the user out: removes who they are from Session, then goes back to the home page.
+        // Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on working with session state (Remove).
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserID");
+            HttpContext.Session.Remove("FirstName");
+            HttpContext.Session.Remove("UserType");
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
