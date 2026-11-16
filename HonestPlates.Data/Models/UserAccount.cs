@@ -31,8 +31,8 @@ namespace HonestPlates.Data.Models
         public string Email { get; set; } = "";
         public string Phone { get; set; } = "";
         public string UserType { get; set; } = "";
-
         public string VerificationCode { get; set; } = "";
+        public bool IsVerified { get; set; }
         public string Question1 { get; set; } = "";
         public string Answer1 { get; set; } = "";
         public string Question2 { get; set; } = "";
@@ -227,6 +227,40 @@ namespace HonestPlates.Data.Models
             {
                 return false;
             }
+        }
+
+        // Checks the username and password. Returns true and fills UserID, FirstName,
+        // UserType and IsVerified when they match; false when either one is wrong.
+        // Came from Project 2 (ASP.NET 4.6 book, scanned, no page): LoginValidate with Rows.Count before Rows[0].
+        public bool Login (string username, string typedPassword)
+        {
+            DBConnect loginDB = new DBConnect();
+            SqlCommand loginCMD = new SqlCommand();
+            loginCMD.CommandType = CommandType.StoredProcedure;
+            loginCMD.CommandText = "TP_GetLoginInfo";
+            loginCMD.Parameters.AddWithValue("@Username", username);
+
+            DataSet ds = loginDB.GetDataSetUsingCmdObj(loginCMD);
+
+            // No such username
+            if (ds.Tables[0].Rows.Count == 0)
+            {
+                return false;
+            }
+
+            // Wrong password (saved is encrypted; CheckPassword decrypts and compares)
+            DataRow row = ds.Tables[0].Rows[0];
+            if (!CheckPassword(row["Password"].ToString(), typedPassword))
+            {
+                return false;
+            }
+
+            UserID = Convert.ToInt32(row["UserID"]);
+            Username = username;
+            FirstName = row["FirstName"].ToString();
+            UserType = row["UserType"].ToString();
+            IsVerified = Convert.ToBoolean(row["IsVerified"]);
+            return true;
         }
     }
 }

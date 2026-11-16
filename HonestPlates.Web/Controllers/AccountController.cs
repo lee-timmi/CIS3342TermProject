@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HonestPlates.Data.Models;
 using HonestPlates.Web.Models;
+using HonestPlates.Data;
 
 namespace HonestPlates.Web.Controllers
 {
@@ -127,7 +128,7 @@ namespace HonestPlates.Web.Controllers
                             {
                                 CookieOptions options = new CookieOptions();
                                 options.Expires = DateTime.Now.AddDays(30);
-                                Response.Cookies.Append("HP_Username", username, options);
+                                Response.Cookies.Append("HP_Username", Encryption.Encrypt(username), options);
                             }
                             else
                             {
@@ -165,11 +166,95 @@ namespace HonestPlates.Web.Controllers
             ViewBag.Questions = UserAccount.QuestionChoices;
             return View(form);
         }
-       
+        
+        [HttpGet]       
         public IActionResult Login()
         {
-            return View();
+            LoginForm form = new LoginForm();
+
+            // The remembered username is saved encrypted, so decrypt it.
+            string? savedCookie = Request.Cookies["HP_Username"];
+
+            if (savedCookie != null)
+            {
+                try
+                {
+                    form.Username = Encryption.Decrypt(savedCookie);
+                    form.RememberMe = true;
+                }
+                catch (Exception)
+                {
+                    Response.Cookies.Delete("HP_Username");
+                }
+            }
+
+            return View(form);
         }
+
+        // POST /Account/Login: checks the username and password, then logs the user in
+        // Came from Murach's ASP.NET Core MVC, Chapter 16 Page 679 on the LogIn() action for POST requests.
+        [HttpPost]
+        public IActionResult Login(LoginForm form)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(form);
+            }
+
+            try
+            {
+                UserAccount account = new UserAccount();
+                string username = form.Username.Trim();
+
+                if (!account.Login(username, form.Password))
+                {
+                    ModelState.AddModelError("", "Wrong username or password.");
+                    return View(form);
+                }
+
+                if (!account.IsVerified)
+                {
+                    ViewBag.VerifyUsername = username;
+                    ModelState.AddModelError("", "Please verify your account first. Check your email for the 6-digit code.");
+                    return View(form);
+                }
+
+                // Logged in: save who they are
+                // Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on working with session state.
+                HttpContext.Session.SetInt32("UserID", account.UserID);
+                HttpContext.Session.SetString("FirstName", account.FirstName);
+                HttpContext.Session.SetString("UserType", account.UserType);
+
+                // "Remember me": the username is saved ENCRYPTED in the cookie (Tri's "encrypt the login cookie" item)
+                // Came from Murach's ASP.NET Core MVC, Chapter 9 Page 349 on working with cookies.
+                if (form.RememberMe)
+                {
+                    CookieOptions options = new CookieOptions();
+                    options.Expires = DateTime.Now.AddDays(30);
+                    options.HttpOnly = true;
+                    Response.Cookies.Append("HP_Username", Encryption.Encrypt(username), options);
+                }
+                else
+                {
+                    Response.Cookies.Delete("HP_Username");
+                }
+
+                return RedirectToAction("Index", "Home");
+            } catch (Exception)
+            {
+                ModelState.AddModelError("", "We couldn't log you in right now. Please try again later.");
+            }
+            return View(form);
+        }
+
+        [HttpPost]
+        public IActionResult ForgetMe()
+        {
+            Response.Cookies.Delete("HP_Username");
+            TempData["Message"] = "This computer no longer remembers your username.";
+            return RedirectToAction("Login");
+        }
+
 
         // Logs the user out: removes who they are from Session, then goes back to the home page.
         // Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on working with session state (Remove).

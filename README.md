@@ -70,6 +70,8 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Profile details + weekly hours + SP get restaurant + SP get hours | E. Dashboards and Profile | Thimmy | ✅ Thu 11/12 |
 | Registration page + 3 security questions + SP add user + SP check username | D. Accounts and Login | Thimmy | ✅ Thu 11/12 |
 | Encrypt passwords + answers | D. Accounts and Login | Thimmy | ✅ Mon 11/16 |
+| Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
+| Encrypt the login cookie | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
 
 ---
 
