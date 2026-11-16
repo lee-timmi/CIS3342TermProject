@@ -165,9 +165,7 @@ namespace HonestPlates.Web.Controllers
             ViewBag.Questions = UserAccount.QuestionChoices;
             return View(form);
         }
-
-
-
+       
         public IActionResult Login()
         {
             return View();

@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Net;
+using System.Formats.Asn1;
 
 namespace HonestPlates.Data.Models
 {
@@ -61,7 +62,8 @@ namespace HonestPlates.Data.Models
             registerCMD.CommandType = CommandType.StoredProcedure;
             registerCMD.CommandText = "TP_AddUser";
             registerCMD.Parameters.AddWithValue("@Username", Username);
-            registerCMD.Parameters.AddWithValue("@Password", Password);
+            // Passwords and answers are saved encrypted (Encryption.cs, AES-256 with a random IV).
+            registerCMD.Parameters.AddWithValue("@Password", Encryption.Encrypt(Password));
             registerCMD.Parameters.AddWithValue("@FirstName", FirstName);
             registerCMD.Parameters.AddWithValue("@LastName", LastName);
             registerCMD.Parameters.AddWithValue("@Email", Email);
@@ -75,11 +77,11 @@ namespace HonestPlates.Data.Models
             registerCMD.Parameters.AddWithValue("@UserType", UserType);
             registerCMD.Parameters.AddWithValue("@VerificationCode", VerificationCode);
             registerCMD.Parameters.AddWithValue("@Question1", Question1);
-            registerCMD.Parameters.AddWithValue("@Answer1", Answer1);
+            registerCMD.Parameters.AddWithValue("@Answer1", Encryption.Encrypt(CleanAnswer(Answer1)));
             registerCMD.Parameters.AddWithValue("@Question2", Question2);
-            registerCMD.Parameters.AddWithValue("@Answer2", Answer2);
+            registerCMD.Parameters.AddWithValue("@Answer2", Encryption.Encrypt(CleanAnswer(Answer2)));
             registerCMD.Parameters.AddWithValue("@Question3", Question3);
-            registerCMD.Parameters.AddWithValue("@Answer3", Answer3);
+            registerCMD.Parameters.AddWithValue("@Answer3", Encryption.Encrypt(CleanAnswer(Answer3)));
 
             UserID = Convert.ToInt32(registerDB.ExecuteScalarFunction(registerCMD));
             return UserID > 0;
@@ -119,6 +121,112 @@ namespace HonestPlates.Data.Models
             sqlCMD.Parameters.AddWithValue("@Code", code);
 
             return db.DoUpdateUsingCmdObj(sqlCMD) == 1;
+        }
+
+        // Answers compared without extra spaces or capitals, so "Fluffy" = "fluffy"
+        public static string CleanAnswer(string answer)
+        {
+            return answer.Trim().ToLower();
+        }
+
+        // For login page: true when typed password MATCHES the encrypted one.
+        public static bool CheckPassword(string savedPassword, string typedPassword)
+        {
+            try
+            {
+                return Encryption.Decrypt(savedPassword) == typedPassword;
+            }
+            catch
+            {
+                // Saved value != encrypted text. No match.
+                return false;
+            }
+        }
+
+        // For forgot username / reset password
+        public static bool CheckAnswer(string savedAnswer, string typedAnswer)
+        {
+            try
+            {
+                return Encryption.Decrypt(savedAnswer) == CleanAnswer(typedAnswer);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ONE-TIME: encrypts every password and answer that's still plain text.
+        // Safe to run twice: values that are already encrypted are skipped. Returns how many were changed.
+        // Came from Project 2 (ASP.NET 4.6 book, scanned, no page): looping a DataSet and running updates.
+        public static int EncryptExistingAccounts()
+        {
+            int count = 0;
+            DBConnect db = new DBConnect();
+
+            // Password
+            SqlCommand getPasswords = new SqlCommand();
+            getPasswords.CommandType = CommandType.StoredProcedure;
+            getPasswords.CommandText = "TP_GetAllPasswords";
+            DataSet passwords = db.GetDataSetUsingCmdObj(getPasswords);
+
+            foreach (DataRow passRow in passwords.Tables[0].Rows)
+            {
+                string saved = passRow["Password"].ToString();
+                if (!IsEncrypted(saved))
+                {
+                    SqlCommand update = new SqlCommand();
+                    update.CommandType = CommandType.StoredProcedure;
+                    update.CommandText = "TP_UpdatePassword";
+                    update.Parameters.AddWithValue("@UserID", passRow["UserID"]);
+                    update.Parameters.AddWithValue("@Password", Encryption.Encrypt(saved));
+
+                    if (db.DoUpdateUsingCmdObj(update) == 1)
+                    {
+                        count++;
+
+                    }
+                }
+            }
+
+            // Security answers (cleaned first, like new registration)
+            SqlCommand getAnswers = new SqlCommand();
+            getAnswers.CommandType = CommandType.StoredProcedure;
+            getAnswers.CommandText = "TP_GetAllAnswers";
+            DataSet answers = db.GetDataSetUsingCmdObj(getAnswers);
+
+            foreach (DataRow ansRow in answers.Tables[0].Rows)
+            {
+                string savedAnswer = ansRow["Answer"].ToString();
+                if (!IsEncrypted(savedAnswer))
+                {
+                    SqlCommand updateAnswer = new SqlCommand();
+                    updateAnswer.CommandType = CommandType.StoredProcedure;
+                    updateAnswer.CommandText = "TP_UpdateAnswer";
+                    updateAnswer.Parameters.AddWithValue("@QuestionID", ansRow["QuestionID"]);
+                    updateAnswer.Parameters.AddWithValue("@Answer", Encryption.Encrypt(CleanAnswer(savedAnswer)));
+
+                    if (db.DoUpdateUsingCmdObj(updateAnswer) == 1)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        private static bool IsEncrypted(string value)
+        {
+            try
+            {
+                Encryption.Decrypt(value);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
