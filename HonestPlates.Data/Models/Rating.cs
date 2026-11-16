@@ -1,10 +1,11 @@
 using System;
 using System.Data;
 
-namespace RestaurantReview
+namespace HonestPlates.Data.Models
 {
     // A restaurant's rating summary, built from the averages GetRestaurantRatings or SearchRestaurants return.
     // Overall = average of Food, Service and Atmosphere; Price is a cost scale (1-4), shown as $ signs.
+    // Came from Project 2 (ASP.NET 4.6 book, scanned, no page): the Rating class, converted to .NET 8.
     public class Rating
     {
         public int ReviewCount { get; set; }
@@ -46,7 +47,7 @@ namespace RestaurantReview
         {
             if (!hasValue)
             {
-                return "&ndash;";
+                return "-";
             }
             return average.ToString("0.0");
         }
@@ -56,7 +57,7 @@ namespace RestaurantReview
         {
             if (!HasReviews())
             {
-                return "&ndash;";
+                return "-";
             }
             return Dollars((int)Math.Round(this.Price));
         }
@@ -68,8 +69,8 @@ namespace RestaurantReview
             {
                 return "No reviews yet";
             }
-            return "&#9733; " + this.Overall.ToString("0.0") + " overall &middot; Food " + this.Food.ToString("0.0")
-                + " &middot; Service " + this.Service.ToString("0.0") + " &middot; " + PriceSigns();
+            return "★ " + this.Overall.ToString("0.0") + " overall · Food " + this.Food.ToString("0.0") +
+               " · Service " + this.Service.ToString("0.0") + " · " + PriceSigns();
         }
 
         // One review's price rating as $ signs (1 -> "$", 4 -> "$$$$")

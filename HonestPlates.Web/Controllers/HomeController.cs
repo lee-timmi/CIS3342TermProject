@@ -60,9 +60,14 @@ public class HomeController : Controller
             DataTable results = search.Search(string.Join(",", cuisines), city, state);
 
             if (results.Rows.Count == 0)
+            {
                 ViewBag.Error = "No restaurants found. Try different filters.";
+            }
             else
+            {
+                search.AddRatings(results);
                 ViewBag.Results = results;
+            }
         }
         catch (Exception)
         {

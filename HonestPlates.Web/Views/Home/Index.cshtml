@@ -73,19 +73,37 @@
     </form>
 </section>
 
+@* Search results as cards: name, cuisine, short description, overall rating, address.
+   Came from Project 2 (ASP.NET 4.6 book, scanned, no page): the rptResults card Repeater, rebuilt with a Razor foreach.
+   Came from Murach's ASP.NET Core MVC, Chapter 7 Page 247 on tag helpers for links (asp-route-id). *@
 @if (ViewBag.Results != null)
 {
     DataTable results = ViewBag.Results;
     <section class="results-section">
-        <p class="results-count">@results.Rows.Count restaurant(s) found</p>
-        <ul>
+        <div class="results-header">
+            <p class="results-count">@results.Rows.Count restaurant@(results.Rows.Count == 1 ? "" : "s") found</p>
+        </div>
+        <div class="results-grid">
             @foreach (DataRow row in results.Rows)
             {
-                <li>
-                    <a asp-controller="Restaurant" asp-action="Profile" asp-route-id="@row["RestaurantID"]">@row["RestaurantName"]</a>
-                    (@row["RestaurantCuisine"], @row["RestaurantCity"], @row["RestaurantState"])
-                </li>
+                // A short description: the first 120 characters, cut with "..."
+                string description = row["RestaurantDescription"].ToString();
+                if (description.Length > 120)
+                {
+                    description = description.Substring(0, 117) + "...";
+                }
+
+                <a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@row["RestaurantID"]">
+                    <div class="card-body">
+                        <h3 class="card-name">@row["RestaurantName"]</h3>
+                        <p class="card-cuisine">@row["RestaurantCuisine"]</p>
+                        <p class="card-rating">@row["RatingText"]</p>
+                        <p class="card-description
+                        <p class="card-location">@row["RestaurantAddress"], @row["RestaurantCity"], @row["RestaurantState"]
+                        @row["RestaurantZipCode"]</p>
+                    </div>
+                </a>
             }
-        </ul>
+        </div>
     </section>
 }
