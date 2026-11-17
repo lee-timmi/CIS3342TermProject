@@ -24,6 +24,22 @@ namespace HonestPlates.Data.Models
             return ds.Tables[0];
         }
 
+        // Every review one user wrote, newest first, with the restaurant's name (TP_GetMyReviews).
+        // The userID comes from Session (who is logged in), never from the URL.
+        public DataTable GetReviewsByUser(int userID)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetMyReviews";
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            return ds.Tables[0];
+        }
+
+
+
         // Fill ImageData and ImageType. Return false when review has no photo
         public bool LoadImage(int reviewID)
         {

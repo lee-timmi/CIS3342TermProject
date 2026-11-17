@@ -1,0 +1,84 @@
+﻿@using System.Data
+@using HonestPlates.Data.Models
+@{
+    ViewData["Title"] = "Dashboard";
+    string userType = ViewBag.UserType;
+    DataTable? myReviews = ViewBag.MyReviews;
+}
+
+@* The review cards reuse the profile page's review styles.
+   Came from Murach's ASP.NET Core MVC, Chapter 15 Page 629 on sections in a layout. *@
+@section Styles {
+    <link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
+}
+
+<div class="container my-5" style="max-width: 900px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    <h1 class="mb-1">Welcome back, @ViewBag.FirstName!</h1>
+    <p class="text-muted mb-4">You're logged in as a @(userType == "Representative" ? "Restaurant Representative" : "Reviewer"). Here's what you can do.</p>
+
+    @if (userType == "Representative")
+    {
+        @* Representative tools (My Restaurant, Reservations, Respond to reviews) go here: Thimmy's Rep dashboard item *@
+    }
+
+    @* Tools for everyone. Came from Murach's ASP.NET Core MVC, Chapter 3 Page 113 on Bootstrap cards. *@
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Find a Restaurant</h5>
+                    <p class="card-text text-muted">Search by cuisine and location, then read reviews or write your own.</p>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="search" class="btn-hp">Search</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* My reviews: every review this user wrote, newest first (read-only; editing comes with My Reviews).
+       Came from Project 2: GetReviewsByUser. *@
+    <h2 class="section-heading">My reviews</h2>
+
+    @if (ViewBag.ReviewsError != null)
+    {
+        <p class="text-danger">@ViewBag.ReviewsError</p>
+    }
+    else if (myReviews == null || myReviews.Rows.Count == 0)
+    {
+        <p class="no-reviews-msg">You haven't written any reviews yet. Find a restaurant to get started.</p>
+    }
+    else
+    {
+        foreach (DataRow review in myReviews.Rows)
+        {
+            <div class="review-card">
+                <div class="review-header">
+                    <a class="review-author" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@review["RestaurantID"]">@review["RestaurantName"]</a>
+                    <span class="review-date">@Convert.ToDateTime(review["ReviewDate"]).ToString("MMMM d, yyyy")</span>
+                </div>
+
+                <p class="review-text">@review["ReviewText"]</p>
+
+                <div class="review-ratings">
+                    <span class="rating-pill">Food <strong>@review["FoodRating"]</strong></span>
+                    <span class="rating-pill">Service <strong>@review["ServiceRating"]</strong></span>
+                    @if (review["AtmosphereRating"] != DBNull.Value)
+                    {
+                        <span class="rating-pill">Atmosphere <strong>@review["AtmosphereRating"]</strong></span>
+                    }
+                    <span class="rating-pill">Price <strong>@Rating.Dollars(Convert.ToInt32(review["PriceRating"]))</strong></span>
+                </div>
+
+                @if (review["ResponseText"] != DBNull.Value)
+                {
+                    <div class="review-response">
+                        <span class="review-response-label">Response from the restaurant</span>
+                        @review["ResponseText"]
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

@@ -239,7 +239,7 @@ namespace HonestPlates.Web.Controllers
                     Response.Cookies.Delete("HP_Username");
                 }
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard");
             } catch (Exception)
             {
                 ModelState.AddModelError("", "We couldn't log you in right now. Please try again later.");
@@ -264,6 +264,35 @@ namespace HonestPlates.Web.Controllers
             HttpContext.Session.Remove("FirstName");
             HttpContext.Session.Remove("UserType");
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET /Account/Dashboard: the logged-in user's home page (both user types).
+        // Logged-out visitors are sent to Log In instead (they can't open it by typing the URL).
+        // Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on working with session state.
+        public IActionResult Dashboard()
+        {
+            int? userID = HttpContext.Session.GetInt32("UserID");
+            if (userID == null)
+            {
+                TempData["Message"] = "Please log in to see your dashboard.";
+                return RedirectToAction("Login");
+            }
+
+            ViewBag.FirstName = HttpContext.Session.GetString("FirstName");
+            ViewBag.UserType = HttpContext.Session.GetString("UserType");
+
+            // Representatives can review other restaurants
+            try
+            {
+                Review review = new Review();
+                ViewBag.MyReviews = review.GetReviewsByUser(userID.Value);
+            }
+            catch (Exception)
+            {
+                ViewBag.ReviewsError = "Unable to load your reviews right now. Please try again later.";
+            }
+
+            return View();
         }
     }
 }
