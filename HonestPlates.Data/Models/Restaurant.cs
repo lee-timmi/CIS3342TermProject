@@ -83,5 +83,18 @@ namespace HonestPlates.Data.Models
             string close = DateTime.Parse(row["CloseTime"].ToString()).ToString("h:mm:tt");
             return open + " - " + close;        
         }
+
+        // Restaurant's rating summary (call after LoadByID). Reuses TP_GetSearchRatings with one ID.
+        public Rating GetRatings()
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand sqlCMD = new SqlCommand();
+            sqlCMD.CommandType = CommandType.StoredProcedure;
+            sqlCMD.CommandText = "TP_GetSearchRatings";
+            sqlCMD.Parameters.AddWithValue("@RestaurantIDs", RestaurantID.ToString());
+
+            DataSet ds = db.GetDataSetUsingCmdObj(sqlCMD);
+            return new Rating(ds.Tables[0].Rows[0]);
+        }
     }
 }

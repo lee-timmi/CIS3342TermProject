@@ -1,9 +1,18 @@
 ﻿@using System.Data
+@using HonestPlates.Data.Models
+
 @model HonestPlates.Data.Models.Restaurant
 @{
     ViewData["Title"] = Model != null ? Model.Name : "Restaurant";
     DataTable hours = ViewBag.Hours;
     int today = (int)DateTime.Now.DayOfWeek;   // 0 = Sunday, same numbering as the table
+    int profilePhotoID = ViewBag.ProfilePhotoID == null ? 0 : ViewBag.ProfilePhotoID;
+    int logoID = ViewBag.LogoID == null ? 0 : ViewBag.LogoID;
+    string bannerUrl = profilePhotoID > 0 ? Url.Content("~/Restaurant/Photo/" + profilePhotoID) : Url.Content("~/images/hero.jpg");
+
+    DataTable? photos = ViewBag.Photos;
+    DataTable? reviews = ViewBag.Reviews;
+    Rating? rating = ViewBag.Rating;
 }
 
 @section Styles {
@@ -20,8 +29,12 @@
 else
 {
     <div class="profile-hero">
-        <img src="~/images/hero.jpg" alt="@Model.Name" class="profile-hero-img" />
+        <img src="@bannerUrl" alt="@Model.Name" class="profile-hero-img" />
         <div class="profile-hero-overlay">
+            @if (logoID > 0)
+            {
+                <img class="profile-logo" src="@Url.Content("~/Restaurant/Photo/" + logoID)" alt="@Model.Name logo" />
+            }
             <span class="profile-cuisine-tag">@Model.Cuisine</span>
             <h1 class="profile-name">@Model.Name</h1>
         </div>
@@ -95,6 +108,101 @@ else
             </aside>
         </div>
 
-        @* Tri: the photo gallery and the reviews go below this line *@
+        @* Photo gallery: every photo except the logo, with its caption. Only on the profile, as the spec requires.
+   Came from Project 2 (ASP.NET 4.6 book, scanned, no page): ShowPhotos + ImageGrab.aspx. *@
+<hr class="profile-divider" />
+<h2 class="section-heading">Photos</h2>
+@{ bool anyPhotos = false; }
+<div class="gallery-grid">
+    @if (photos != null)
+    {
+        foreach (DataRow photo in photos.Rows)
+        {
+            if (photo["ImageCategory"].ToString() != "Logo")
+            {
+                anyPhotos = true;
+                <figure class="gallery-item">
+                    <img src="@Url.Content("~/Restaurant/Photo/" + photo["ImageID"])" alt="@photo["Caption"]" />
+                    <figcaption>@photo["Caption"]</figcaption>
+                </figure>
+            }
+        }
+    }
+</div>
+@if (!anyPhotos)
+{
+    <p class="no-reviews-msg">No photos yet.</p>
+}
+
+@* Reviews: the rating summary, then every review (newest first) with its ratings, photo, and the rep's response.
+   Came from Project 2 (ASP.NET 4.6 book, scanned, no page): pnlRatingSummary + the rptReviews Repeater. *@
+<hr class="profile-divider" />
+<h2 class="section-heading">Reviews</h2>
+
+@if (ViewBag.ReviewsError != null)
+{
+    <p class="text-danger">@ViewBag.ReviewsError</p>
+}
+else if (rating == null || !rating.HasReviews())
+{
+    <p class="no-reviews-msg">No reviews yet.</p>
+}
+else
+{
+    <div class="rating-summary">
+        <div class="avg-row">
+            <div class="avg-item"><span class="avg-label">Overall</span><span class="avg-value">@rating.Format(rating.Overall, true)</span><span class="avg-max">/5</span></div>
+            <div class="avg-item"><span class="avg-label">Food</span><span class="avg-value">@rating.Format(rating.Food, true)</span><span class="avg-max">/5</span></div>
+            <div class="avg-item"><span class="avg-label">Service</span><span class="avg-value">@rating.Format(rating.Service, true)</span><span class="avg-max">/5</span></div>
+            <div class="avg-item"><span class="avg-label">Atmosphere</span><span class="avg-value">@rating.Format(rating.Atmosphere, rating.HasAtmosphere)</span><span class="avg-max">/5</span></div>
+            <div class="avg-item"><span class="avg-label">Price</span><span class="avg-value">@rating.PriceSigns()</span></div>
+        </div>
+        <p class="avg-count">Based on @rating.ReviewCount review(s)</p>
+    </div>
+
+    foreach (DataRow review in reviews.Rows)
+    {
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-author">@Review.ReviewerName(review)</span>
+                <span class="review-date">@Convert.ToDateTime(review["ReviewDate"]).ToString("MMMM d, yyyy")</span>
+            </div>
+
+            @if (review["VisitDateTime"] != DBNull.Value)
+            {
+                <div class="review-visit">Visited @Convert.ToDateTime(review["VisitDateTime"]).ToString("MMMM d, yyyy 'at' h:mm tt")</div>
+            }
+
+            <p class="review-text">@review["ReviewText"]</p>
+
+            @if (review["HasPhoto"].ToString() == "1")
+            {
+                <img class="review-photo" src="@Url.Content("~/Restaurant/ReviewPhoto/" + review["ReviewID"])" alt="Photo from this review" />
+            }
+
+            <div class="review-ratings">
+                <span class="rating-pill">Food <strong>@review["FoodRating"]</strong></span>
+                <span class="rating-pill">Service <strong>@review["ServiceRating"]</strong></span>
+                @if (review["AtmosphereRating"] != DBNull.Value)
+                {
+                    <span class="rating-pill">Atmosphere <strong>@review["AtmosphereRating"]</strong></span>
+                }
+                <span class="rating-pill">Price <strong>@Rating.Dollars(Convert.ToInt32(review["PriceRating"]))</strong></span>
+            </div>
+
+            @if (review["ResponseText"] != DBNull.Value)
+            {
+                <div class="review-response">
+                    <span class="review-response-label">Response from the restaurant</span>
+                    @review["ResponseText"]
+                </div>
+            }
+        </div>
+    }
+}
+
+
+
+
     </div>
 }

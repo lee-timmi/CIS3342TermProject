@@ -14,6 +14,14 @@
 }
 
 <a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@Model["RestaurantID"]">
+
+    @if (Model.Table.Columns.Contains("LogoImageID") && Model["LogoImageID"] != DBNull.Value)
+    {
+        <div class="card-img-wrap">
+            <img src="@Url.Content("~/Restaurant/Photo/" + Model["LogoImageID"])" alt="@Model["RestaurantName"] logo" />
+        </div>
+    }
+
     <div class="card-body">
         <h3 class="card-name">@Model["RestaurantName"]</h3>
         <p class="card-cuisine">@Model["RestaurantCuisine"]</p>
