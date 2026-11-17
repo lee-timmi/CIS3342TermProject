@@ -1,0 +1,35 @@
+﻿@* Page 1 of account recovery: one version for "forgot username" (asks for the email)
+   and one for "forgot password" (asks for the username). The Login page links to each.
+   Came from Murach's ASP.NET Core MVC, Chapter 2 Page 75 on forms with validation messages. *@
+@model HonestPlates.Web.Models.ForgotForm
+@{
+    bool forgotUsername = Model.Mode == "username";
+    ViewData["Title"] = forgotUsername ? "Forgot Your Username?" : "Forgot Your Password?";
+}
+
+<div class="container my-5" style="max-width: 480px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+    <h1 class="mb-3">@(forgotUsername ? "Forgot your username?" : "Forgot your password?")</h1>
+    <p class="text-muted">
+        @(forgotUsername ? "Enter the email on your account. We'll ask one of your security questions, then show your username."
+                         : "Enter your username. We'll ask one of your security questions, then you can choose a new password.")
+    </p>
+
+     <form asp-action="Forgot" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        @* Which path this is (the controller checks it again) *@
+        <input type="hidden" asp-for="Mode" />
+
+        <div class="mb-3">
+            <label asp-for="Lookup" class="form-label">@(forgotUsername ? "Email" : "Username")</label>
+            <input asp-for="Lookup" class="form-control" />
+            <span asp-validation-for="Lookup" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-hp">Continue</button>
+    </form>
+
+    <p class="mt-4"><a asp-action="Login">Back to Log In</a></p>
+</div>

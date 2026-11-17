@@ -1,0 +1,28 @@
+﻿@* Page 2: one random security question.
+   Came from Murach's ASP.NET Core MVC, Chapter 2 Page 75 on forms with validation messages. *@
+@model HonestPlates.Web.Models.QuestionForm
+@{
+    ViewData["Title"] = "Security Question";
+}
+
+<div class="container my-5" style="max-width: 480px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+    <h1 class="mb-3">Security question</h1>
+
+    <form asp-action="Question" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <p class="fw-bold">@Model.QuestionText</p>
+
+        <div class="mb-3">
+            <label asp-for="Answer" class="form-label">Your answer</label>
+            <input asp-for="Answer" class="form-control" autocomplete="off" />
+            <span asp-validation-for="Answer" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-hp">Check answer</button>
+    </form>
+
+    <p class="mt-4"><a asp-action="Login">Start over</a></p>
+</div>

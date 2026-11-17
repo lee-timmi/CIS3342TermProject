@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Formats.Asn1;
+using System.Transactions;
 
 namespace HonestPlates.Data.Models
 {
@@ -262,5 +263,103 @@ namespace HonestPlates.Data.Models
             IsVerified = Convert.ToBoolean(row["IsVerified"]);
             return true;
         }
+
+        // -------------- FORGOT username / RESET password --------------
+
+        // Finds the account that uses this email. Fills UserID and Username; false if none.
+        public bool FindByEmail(string email)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetUserByEmail";
+            cmd.Parameters.AddWithValue("@Email", email);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            if (ds.Tables[0].Rows.Count == 0)
+            {
+                return false;
+            }
+
+            UserID = Convert.ToInt32(ds.Tables[0].Rows[0]["UserID"]);
+            Username = ds.Tables[0].Rows[0]["Username"].ToString();
+            return true;
+        }
+
+        // Finds the account with this username (reuses TP_GetLoginInfo). Fills UserID and Username; false if none.
+        public bool FindByUsername(string username)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetLoginInfo";
+            cmd.Parameters.AddWithValue("@Username", username);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            if (ds.Tables[0].Rows.Count == 0)
+            {
+                return false;
+            }
+
+            UserID = Convert.ToInt32(ds.Tables[0].Rows[0]["UserID"]);
+            Username = username;
+            return true;
+        }
+
+        // One of the user's security questions. Picked at random.
+        // Returns the row (questionID, questionText), or null if no questions exists for user.
+        // Came from Murach's ASP.NET Core MVC, Appendix B Page 741 (a Random example).
+        public DataRow GetRandomQuestion()
+        {
+            DataTable questions = GetSecurityQuestions();
+            if (questions.Rows.Count == 0)
+            {
+                return null;
+            }
+            Random random = new Random();
+            return questions.Rows[random.Next(questions.Rows.Count)];
+        }
+
+        // True when the typed answer matches the saved (encrypted) answer to that question.
+        // The question is looked up again here, so the answer never has to be kept in Session.
+        public bool CheckQuestionAnswer(int questionID, string typedAnswer)
+        {
+            DataTable questions = GetSecurityQuestions();
+            foreach (DataRow row in questions.Rows)
+            {
+                if (Convert.ToInt32(row["QuestionID"]) == questionID)
+                {
+                    return CheckAnswer(row["Answer"].ToString(), typedAnswer);
+                }
+            }
+            return false;
+        }
+
+        // Saves a new password for this user, encrypted (reuses TP_UpdatePassword). True when it saved.
+        public bool UpdatePassword(string newPassword)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_UpdatePassword";
+            cmd.Parameters.AddWithValue("@UserID", UserID);
+            cmd.Parameters.AddWithValue("@Password", Encryption.Encrypt(newPassword));
+
+            return db.DoUpdateUsingCmdObj(cmd) == 1;
+        }
+
+        // The user's 3 security questions
+        private DataTable GetSecurityQuestions()
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetSecurityQuestions";
+            cmd.Parameters.AddWithValue("@UserID", UserID);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            return ds.Tables[0];
+        }
+
     }
 }

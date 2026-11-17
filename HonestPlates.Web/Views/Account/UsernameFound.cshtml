@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Your Username";
+}
+
+<div class="container my-5" style="max-width: 480px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+    <h1 class="mb-3">Found it!</h1>
+    <p class="fs-5">Your username is <strong>@ViewBag.Username</strong>.</p>
+    <a asp-action="Login" asp-route-username="@ViewBag.Username" class="btn-hp">Log in as @ViewBag.Username</a>
+</div>

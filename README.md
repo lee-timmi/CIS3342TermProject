@@ -76,6 +76,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Encrypt passwords + answers | D. Accounts and Login | Thimmy | ✅ Mon 11/16 |
 | Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
 | Encrypt the login cookie | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
+| Forgot username / reset password (1 random security question) + SPs | D. Accounts and Login | Thimmy (Tri's item) | ✅ Tue 11/17 |
 
 ---
 
