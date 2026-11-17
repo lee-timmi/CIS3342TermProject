@@ -22,6 +22,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         LoadSearchLists();
+        LoadTopRated();
         return View();
     }
 
@@ -91,6 +92,19 @@ public class HomeController : Controller
             ViewBag.Cuisines = new List<String>();
             ViewBag.Location = new DataTable();
             ViewBag.Error = "Unable to load the search options. Please try again later.";
+        }
+    }
+
+    private void LoadTopRated()
+    {
+        try
+        {
+            RestaurantSearch search = new RestaurantSearch();
+            ViewBag.TopRated = search.GetTopRated("Philadelphia", "PA", 6);
+        }
+        catch (Exception)
+        {
+
         }
     }
 

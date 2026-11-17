@@ -86,24 +86,65 @@
         <div class="results-grid">
             @foreach (DataRow row in results.Rows)
             {
-                // A short description: the first 120 characters, cut with "..."
-                string description = row["RestaurantDescription"].ToString();
-                if (description.Length > 120)
-                {
-                    description = description.Substring(0, 117) + "...";
-                }
-
-                <a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@row["RestaurantID"]">
-                    <div class="card-body">
-                        <h3 class="card-name">@row["RestaurantName"]</h3>
-                        <p class="card-cuisine">@row["RestaurantCuisine"]</p>
-                        <p class="card-rating">@row["RatingText"]</p>
-                        <p class="card-description
-                        <p class="card-location">@row["RestaurantAddress"], @row["RestaurantCity"], @row["RestaurantState"]
-                        @row["RestaurantZipCode"]</p>
-                    </div>
-                </a>
+                <partial name="_RestaurantCard" model="row" />
             }
         </div>
     </section>
 }
+
+@if (ViewBag.TopRated != null)
+{
+    DataTable topRated = ViewBag.TopRated;
+    if (topRated.Rows.Count > 0)
+    {
+        <section class="results-section">
+            <div class="section-heading">
+                <p class="section-eyebrow">Diners' favorites</p>
+                <h2 class="section-title">Top rated in Philadelphia</h2>
+            </div>
+            <div class="results-grid">
+                @foreach (DataRow row in topRated.Rows)
+                {
+                    <partial name="_RestaurantCard" model="row" />
+                }
+            </div>
+        </section>
+    }
+}
+
+@* How it works: one card per kind of user. The "create an account" buttons hide once someone is logged in.
+   Came from Project 2 (ASP.NET 4.6 book, scanned, no page): the how-it-works section.
+   Came from Murach's ASP.NET Core MVC, Chapter 9 Page 327 on using session state in views. *@
+<section class="how-it-works">
+    <div class="section-heading">
+        <p class="section-eyebrow">How it works</p>
+        <h2 class="section-title">Something for everyone at the table</h2>
+    </div>
+    <div class="how-grid">
+        <div class="how-card">
+            <span class="how-step">1</span>
+            <h3>Diners</h3>
+            <p>Search by cuisine and location, read honest reviews, and request a table. No account needed.</p>
+            <a href="#search" class="btn-hp btn-hp-outline">Find a restaurant</a>
+        </div>
+        <div class="how-card">
+            <span class="how-step">2</span>
+            <h3>Reviewers</h3>
+            <p>Rate the food, service, atmosphere and price, add a photo, and edit your reviews any time.</p>
+            @if (Context.Session.GetInt32("UserID") == null)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn-hp btn-hp-outline">Create an account</a>
+            }
+        </div>
+        <div class="how-card">
+            <span class="how-step">3</span>
+            <h3>Restaurant owners</h3>
+            <p>Add your restaurant's profile, hours and photos, manage reservations, and answer reviews.</p>
+            @if (Context.Session.GetInt32("UserID") == null)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn-hp btn-hp-outline">Add your restaurant</a>
+            }
+        </div>
+    </div>
+</section>
+

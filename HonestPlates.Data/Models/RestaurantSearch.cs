@@ -96,5 +96,30 @@ namespace HonestPlates.Data.Models
                 }
             }
         }
+
+        // The best-rated restaurants in a city, with a "RatingText" column like the search results have.
+        // Came from Project 2: Restaurant.GetTopRated + AddCardColumns.
+        public DataTable GetTopRated (string city, string state, int count)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetTopRated";
+            cmd.Parameters.AddWithValue("@City", city);
+            cmd.Parameters.AddWithValue("@State", state);
+            cmd.Parameters.AddWithValue("@Count", count);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            DataTable topRated = ds.Tables[0];
+
+            // Averages are there, this just adds in that column.
+            topRated.Columns.Add("RatingText");
+            foreach (DataRow row in topRated.Rows)
+            {
+                Rating rating = new Rating(row);
+                row["RatingText"] = rating.SummaryText();
+            }
+            return topRated;
+        }
     }
 }

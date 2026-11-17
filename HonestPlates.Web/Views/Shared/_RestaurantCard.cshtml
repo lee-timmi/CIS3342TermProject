@@ -1,0 +1,24 @@
+﻿@* One restaurant card: name, cuisine, rating, short description, address. The whole card links to the profile.
+   Used by the search results and Top rated on the home page.
+   Came from Murach's ASP.NET Core MVC, Chapter 15 Page 629 on creating and using a partial view. *@
+@using System.Data
+@model DataRow
+
+@{
+    // A short description: the first 120 characters, cut with "..."
+    string description = Model["RestaurantDescription"].ToString();
+    if (description.Length > 120)
+    {
+        description = description.Substring(0, 117) + "...";
+    }
+}
+
+<a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@Model["RestaurantID"]">
+    <div class="card-body">
+        <h3 class="card-name">@Model["RestaurantName"]</h3>
+        <p class="card-cuisine">@Model["RestaurantCuisine"]</p>
+        <p class="card-rating">@Model["RatingText"]</p>
+        <p class="card-description">@description</
+        <p class="card-location">@Model["RestaurantAddress"], @Model["RestaurantCity"], @Model["RestaurantState"] @Model["RestaurantZipCode"]</p>
+    </div>
+</a>
