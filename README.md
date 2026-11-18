@@ -75,6 +75,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Representative dashboard + SP get rep's restaurant | E. Dashboards and Profile | Thimmy | ✅ Wed 11/18 |
 | Add / edit restaurant page + SP add restaurant + SP update restaurant + SP save hours | G. Representative Tools | Thimmy | ✅ Wed 11/18 |
 | Block rep-only pages | D. Accounts and Login | Thimmy | ✅ Wed 11/18 |
+| My Reviews (edit, delete) + SP update review + SP delete review | H. Reviewer Tools and Reservations | Thimmy | ✅ Wed 11/18 |
 | Registration page + 3 security questions + SP add user + SP check username | D. Accounts and Login | Thimmy | ✅ Thu 11/12 |
 | Encrypt passwords + answers | D. Accounts and Login | Thimmy | ✅ Mon 11/16 |
 | Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |

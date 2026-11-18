@@ -1,0 +1,104 @@
+﻿@model HonestPlates.Web.Models.ReviewForm
+@using HonestPlates.Data.Models
+@{
+    ViewData["Title"] = "Edit Review";
+}
+
+<div class="container my-5" style="max-width: 720px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    <h1 class="mb-1">Edit your review</h1>
+    <p class="text-muted mb-4">of <strong>@Model.RestaurantName</strong></p>
+
+    @* Came from Murach's ASP.NET Core MVC, Chapter 2 Page 75 on checking validation and showing error messages. *@
+    <form asp-action="Edit" method="post">
+
+        @* Came from Murach's ASP.NET Core MVC, Chapter 11 Page 409 on model-level validation messages. *@
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        @* Kept for the post-back. Came from Murach's ASP.NET Core MVC, Chapter 4 Page 165 on the Add and Edit pages. *@
+        <input type="hidden" asp-for="ReviewID" />
+        <input type="hidden" asp-for="RestaurantName" />
+        <input type="hidden" asp-for="HasPhoto" />
+
+        <h2 class="section-heading">Your ratings</h2>
+
+        @* One radio button per score (1 to 5). Each needs its own id so its label is clickable.
+           Came from Murach's ASP.NET Core MVC, Chapter 7 Page 230 on inline loops. *@
+        <div class="mb-3">
+            <label class="form-label d-block">Food</label>
+            <span class="rating-choice">
+                @for (int n = 1; n <= 5; n++)
+                {
+                    <input asp-for="FoodRating" type="radio" value="@n" id="food@(n)" class="form-check-input" />
+                    <label for="food@(n)">@(new string('★', n))</label>
+                }
+            </span>
+            <span asp-validation-for="FoodRating" class="text-danger d-block"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Service</label>
+            <span class="rating-choice">
+                @for (int n = 1; n <= 5; n++)
+                {
+                    <input asp-for="ServiceRating" type="radio" value="@n" id="service@(n)" class="form-check-input" />
+                    <label for="service@(n)">@(new string('★', n))</label>
+                }
+            </span>
+            <span asp-validation-for="ServiceRating" class="text-danger d-block"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Atmosphere</label>
+            <span class="rating-choice">
+                @for (int n = 1; n <= 5; n++)
+                {
+                    <input asp-for="AtmosphereRating" type="radio" value="@n" id="atmosphere@(n)" class="form-check-input" />
+                    <label for="atmosphere@(n)">@(new string('★', n))</label>
+                }
+            </span>
+            <span asp-validation-for="AtmosphereRating" class="text-danger d-block"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Price</label>
+            <span class="rating-choice">
+                @for (int n = 1; n <= 5; n++)
+                {
+                    <input asp-for="PriceRating" type="radio" value="@n" id="price@(n)" class="form-check-input" />
+                    <label for="price@(n)">@Rating.Dollars(n)</label>
+                }
+            </span>
+            <span asp-validation-for="PriceRating" class="text-danger d-block"></span>
+        </div>
+
+        <h2 class="section-heading mt-4">Your review</h2>
+
+        <div class="mb-3">
+            <label asp-for="VisitDate" class="form-label">When did you visit?</label>
+            <input asp-for="VisitDate" type="datetime-local" class="form-control" style="max-width: 260px;" />
+            <span asp-validation-for="VisitDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ReviewText" class="form-label">Review</label>
+            <textarea asp-for="ReviewText" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="ReviewText" class="text-danger"></span>
+        </div>
+
+        @if (Model.HasPhoto)
+        {
+            <div class="form-check mb-3">
+                <input asp-for="RemovePhoto" class="form-check-input" />
+                <label asp-for="RemovePhoto" class="form-check-label">Remove my photo from this review</label>
+            </div>
+        }
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-hp">Save changes</button>
+            <a asp-controller="Account" asp-action="Dashboard" class="btn-hp btn-hp-outline">Cancel</a>
+        </div>
+    </form>
+</div>

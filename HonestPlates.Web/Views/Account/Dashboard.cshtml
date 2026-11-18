@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    @* My reviews: every review this user wrote, newest first (read-only; editing comes with My Reviews).
+    @* My reviews: every review this user wrote, newest first (with Edit and Delete).
        Came from Project 2: GetReviewsByUser. *@
     <h2 class="section-heading">My reviews</h2>
 
@@ -154,6 +154,15 @@
                         @review["ResponseText"]
                     </div>
                 }
+
+                @* Edit is a link (GET). Delete is a small POST form, so a link can't delete anything.*@
+                <div class="review-actions mt-3">
+                    <a asp-controller="Review" asp-action="Edit" asp-route-id="@review["ReviewID"]" class="btn-hp btn-hp-outline">Edit</a>
+                    <form asp-controller="Review" asp-action="Delete" asp-route-id="@review["ReviewID"]" method="post"
+                          onsubmit="return confirm('Delete your review of @review["RestaurantName"]? This can\'t be undone.');">
+                        <button type="submit" class="btn-hp btn-hp-outline">Delete</button>
+                    </form>
+                </div>
             </div>
         }
     }
