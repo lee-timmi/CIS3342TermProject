@@ -478,6 +478,20 @@ namespace HonestPlates.Web.Controllers
                 ViewBag.ReviewsError = "Unable to load your reviews right now. Please try again later.";
             }
 
+            string userType = HttpContext.Session.GetString("UserType");
+            if (userType == "Representative")
+            {
+                try
+                {
+                    Restaurant restaurant = new Restaurant();
+                    ViewBag.MyRestaurants = restaurant.GetRestaurantByRep(Convert.ToInt32(userID));
+                }
+                catch (Exception)
+                {
+                    ViewBag.RestaurantError = "Unable to load your restaurant right now. Please try again later.";
+                }
+            }
+
             return View();
         }
 

@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = "Dashboard";
     string userType = ViewBag.UserType;
-    DataTable? myReviews = ViewBag.MyReviews;
+    DataTable myReviews = ViewBag.MyReviews;
+    DataTable myRestaurants = ViewBag.MyRestaurants;
 }
 
 @* The review cards reuse the profile page's review styles.
@@ -21,7 +22,72 @@
 
     @if (userType == "Representative")
     {
-        @* Representative tools (My Restaurant, Reservations, Respond to reviews) go here: Thimmy's Rep dashboard item *@
+        @* My restaurant: each restaurant this rep manages, with counts of what needs attention.*@
+        <h2 class="section-heading">My restaurant</h2>
+
+        @* Came from Murach's ASP.NET Core MVC, Chapter 7 Page 230 on inline loops and conditional statements. *@
+        @if (ViewBag.RestaurantError != null)
+        {
+            <p class="text-danger">@ViewBag.RestaurantError</p>
+        }
+        else if (myRestaurants == null || myRestaurants.Rows.Count == 0)
+        {
+            <p class="no-reviews-msg">You haven't added your restaurant yet. Adding a restaurant is coming soon.</p>
+        }
+        else
+        {
+            foreach (DataRow restaurant in myRestaurants.Rows)
+            {
+                @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 113 on Bootstrap cards. *@
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">@restaurant["RestaurantName"]</h5>
+                        <p class="text-muted mb-3">@restaurant["RestaurantCuisine"] · @restaurant["RestaurantCity"], @restaurant["RestaurantState"]</p>
+
+                        <div class="review-ratings mb-3">
+                            <span class="rating-pill">Reviews <strong>@restaurant["ReviewCount"]</strong></span>
+                            <span class="rating-pill">Need a response <strong>@restaurant["NeedsResponse"]</strong></span>
+                            <span class="rating-pill">Pending reservations <strong>@restaurant["PendingReservations"]</strong></span>
+                        </div>
+                        
+                        <a asp-controller="Restaurant" asp-action="Profile" asp-route-id="@restaurant["RestaurantID"]" class="btn-hp">View profile</a>
+                    
+                    </div>
+                </div>
+            }
+        }
+
+        @* Representative tools. The buttons turn into links when each page is built.
+           Came from Murach's ASP.NET Core MVC, Chapter 3 Page 113 on Bootstrap cards. *@
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage My Restaurant</h5>
+                        <p class="card-text text-muted">Add or edit your restaurant's details, hours, and photos.</p>
+                        <button type="button" class="btn-hp btn-hp-outline" disabled>Coming soon</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Reservations</h5>
+                        <p class="card-text text-muted">View, confirm, change, or cancel reservations.</p>
+                        <button type="button" class="btn-hp btn-hp-outline" disabled>Coming soon</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Respond to Reviews</h5>
+                        <p class="card-text text-muted">Read your restaurant's reviews and post responses.</p>
+                        <button type="button" class="btn-hp btn-hp-outline" disabled>Coming soon</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 
     @* Tools for everyone. Came from Murach's ASP.NET Core MVC, Chapter 3 Page 113 on Bootstrap cards. *@

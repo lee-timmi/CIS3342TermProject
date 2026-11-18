@@ -96,5 +96,18 @@ namespace HonestPlates.Data.Models
             DataSet ds = db.GetDataSetUsingCmdObj(sqlCMD);
             return new Rating(ds.Tables[0].Rows[0]);
         }
+
+        // Every restaurant this rep manages, with review and reservation counts (0 rows if none yet).
+        public DataTable GetRestaurantByRep (int userID)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetRepRestaurant";
+            cmd.Parameters.AddWithValue("@RepresentativeUserID", userID);
+
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+            return ds.Tables[0];
+        }
     }
 }
