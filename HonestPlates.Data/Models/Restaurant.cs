@@ -109,5 +109,102 @@ namespace HonestPlates.Data.Models
             DataSet ds = db.GetDataSetUsingCmdObj(cmd);
             return ds.Tables[0];
         }
+
+        /* 
+           Adds the restaurant's fields to a command (used by AddRestaurant and UpdateRestaurant).
+           Blank optional fields are saved as NULL, like Phone in UserAccount.Register.
+           Came from Project 2: Restaurant.cs AddRestaurant/UpdateRestaurant.
+        */
+        private void AddFields(SqlCommand cmd)
+        {
+            cmd.Parameters.AddWithValue("@RepresentativeUserID", RepresentativeUserID);
+            cmd.Parameters.AddWithValue("@RestaurantName", Name);
+            cmd.Parameters.AddWithValue("@RestaurantAddress", Street);
+            cmd.Parameters.AddWithValue("@RestaurantCity", City);
+            cmd.Parameters.AddWithValue("@RestaurantState", State);
+            cmd.Parameters.AddWithValue("@RestaurantZipCode", Zip);
+            cmd.Parameters.AddWithValue("@RestaurantCuisine", Cuisine);
+            cmd.Parameters.AddWithValue("@RestaurantDescription", Description);
+            cmd.Parameters.AddWithValue("@RestaurantPhone", Phone);
+
+            if (Website == null || Website == "")
+            {
+                cmd.Parameters.AddWithValue("@RestaurantWebsite", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@RestaurantWebsite", Website);
+            }
+            if (SocialMedia == null || SocialMedia == "")
+            {
+                cmd.Parameters.AddWithValue("@RestaurantSocialMedia", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@RestaurantSocialMedia", SocialMedia);
+            }
+            if (Owner == null || Owner == "")
+            {
+                cmd.Parameters.AddWithValue("@RestaurantOwner", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@RestaurantOwner", Owner);
+            }     
+        }
+
+        // Adds a new restaurant for RepresentativeUserID. Sets RestaurantID and returns true,
+        // or returns false if this rep already has a restaurant (the SP sends back 0).
+        public bool AddRestaurant()
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_AddRestaurant";
+            AddFields(cmd);
+
+            RestaurantID = Convert.ToInt32(db.ExecuteScalarFunction(cmd));
+            return RestaurantID > 0;
+        }
+
+        // Saves changes to RestaurantID. Returns false if nothing changed
+        // (the restaurant isn't this rep's, or the database had an error).
+        public bool UpdateRestaurant()
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_UpdateRestaurant";
+            cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+            AddFields(cmd);
+
+            return db.DoUpdateUsingCmdObj(cmd) > 0;
+        }
+
+        // Saves one day's hours (0 = Sunday ... 6 = Saturday). Times are "HH:mm" from a time box.
+        // A closed day saves NULL times.
+        public bool SaveHours(int day, bool isClosed, string openTime, string closeTime)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_SaveRestaurantHours";
+            cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+            cmd.Parameters.AddWithValue("@DayOfWeek", day);
+            cmd.Parameters.AddWithValue("@IsClosed", isClosed);
+
+            if (isClosed)
+            {
+                cmd.Parameters.AddWithValue("@OpenTime", DBNull.Value);
+                cmd.Parameters.AddWithValue("@CloseTime", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@OpenTime", TimeSpan.Parse(openTime));
+                cmd.Parameters.AddWithValue("@CloseTime", TimeSpan.Parse(closeTime));
+            }
+
+            return db.DoUpdateUsingCmdObj(cmd) > 0;
+        }
     }
 }

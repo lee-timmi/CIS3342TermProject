@@ -1,0 +1,133 @@
+﻿@model HonestPlates.Web.Models.RestaurantForm
+@{
+    bool adding = Model.RestaurantID == 0;
+    ViewData["Title"] = adding ? "Add Your Restaurant" : "Edit Your Restaurant";
+}
+
+<div class="container my-5" style="max-width: 800px;">
+    @* Came from Murach's ASP.NET Core MVC, Chapter 3 Page 97 on working with images. *@
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    <h1 class="mb-1">@ViewData["Title"]</h1>
+    <p class="text-muted mb-4">
+        @(adding ? "Tell diners about your restaurant. You can change any of this later." : "Update your details and weekly hours.")
+    </p>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+     <form asp-action="Manage" method="post">
+
+        @* Came from Murach's ASP.NET Core MVC, Chapter 11 Page 409 on model-level validation messages. *@
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        @* Keeps Add vs Edit after a post-back (the controller doesn't trust it for saving).
+           Came from Murach's ASP.NET Core MVC, Chapter 4 Page 165 on the Add and Edit pages. *@
+        <input type="hidden" asp-for="RestaurantID" />
+
+        <h2 class="section-heading">Details</h2>
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label asp-for="Name" class="form-label">Restaurant name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Cuisine" class="form-label">Cuisine</label>
+                <input asp-for="Cuisine" class="form-control" placeholder="e.g. Italian" />
+                <span asp-validation-for="Cuisine" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Street" class="form-label">Street address</label>
+            <input asp-for="Street" class="form-control" />
+            <span asp-validation-for="Street" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="City" class="form-label">City</label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label asp-for="State" class="form-label">State</label>
+                <input asp-for="State" class="form-control" maxlength="2" placeholder="PA" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Zip" class="form-label">ZIP code</label>
+                <input asp-for="Zip" class="form-control" maxlength="5" />
+                <span asp-validation-for="Zip" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Phone" class="form-label">Phone</label>
+                <input asp-for="Phone" class="form-control" placeholder="e.g. 215-555-1234" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Owner" class="form-label">Owner (optional)</label>
+                <input asp-for="Owner" class="form-control" />
+                <span asp-validation-for="Owner" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Website" class="form-label">Website (optional)</label>
+                <input asp-for="Website" class="form-control" placeholder="https://" />
+                <span asp-validation-for="Website" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="SocialMedia" class="form-label">Social media (optional)</label>
+                <input asp-for="SocialMedia" class="form-control" placeholder="e.g. instagram.com/yourplace" />
+                <span asp-validation-for="SocialMedia" class="text-danger"></span>
+            </div>
+        </div>
+
+        <h2 class="section-heading mt-4">Weekly hours</h2>
+
+        @* One row per day; the names Closed[0], OpenTime[0] ... [6] post back as arrays.
+           Came from Murach's ASP.NET Core MVC, Chapter 10 Page 373 on posting an array to an action method.
+           Came from Murach's ASP.NET Core MVC, Chapter 7 Page 230 on inline loops. *@
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Opens</th>
+                    <th>Closes</th>
+                    <th>Closed all day</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 7; i++)
+                {
+                    <tr>
+                        <td>@HonestPlates.Web.Models.RestaurantForm.DayNames[i]</td>
+                        <td><input asp-for="OpenTime[i]" type="time" class="form-control" /></td>
+                        <td><input asp-for="CloseTime[i]" type="time" class="form-control" /></td>
+                        <td><input asp-for="Closed[i]" class="form-check-input" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn-hp">@(adding ? "Add restaurant" : "Save changes")</button>
+            <a asp-controller="Account" asp-action="Dashboard" class="btn-hp btn-hp-outline">Cancel</a>
+        </div>
+    </form>
+</div>

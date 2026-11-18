@@ -19,6 +19,13 @@
 
     <h1 class="mb-1">Welcome back, @ViewBag.FirstName!</h1>
     <p class="text-muted mb-4">You're logged in as a @(userType == "Representative" ? "Restaurant Representative" : "Reviewer"). Here's what you can do.</p>
+    
+    @* A message from a page that sent the user back here (for example, a Reviewer opening a rep-only page).
+       Came from Murach's ASP.NET Core MVC, Chapter 8 Page 306 on using TempData. *@
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-warning">@TempData["Message"]</div>
+    }
 
     @if (userType == "Representative")
     {
@@ -32,7 +39,10 @@
         }
         else if (myRestaurants == null || myRestaurants.Rows.Count == 0)
         {
-            <p class="no-reviews-msg">You haven't added your restaurant yet. Adding a restaurant is coming soon.</p>
+            <p class="no-reviews-msg">
+                You haven't added your restaurant yet.
+                <a asp-controller="Restaurant" asp-action="Manage">Add your restaurant</a> to start getting reviews.
+            </p>
         }
         else
         {
@@ -65,7 +75,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Manage My Restaurant</h5>
                         <p class="card-text text-muted">Add or edit your restaurant's details, hours, and photos.</p>
-                        <button type="button" class="btn-hp btn-hp-outline" disabled>Coming soon</button>
+                        <a asp-controller="Restaurant" asp-action="Manage" class="btn-hp">Manage Restaurant</a>
                     </div>
                 </div>
             </div>
