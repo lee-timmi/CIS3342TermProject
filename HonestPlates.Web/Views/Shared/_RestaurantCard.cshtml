@@ -1,32 +1,29 @@
-﻿@* One restaurant card: name, cuisine, rating, short description, address. The whole card links to the profile.
-   Used by the search results and Top rated on the home page.
-   Came from Murach's ASP.NET Core MVC, Chapter 15 Page 629 on creating and using a partial view. *@
-@using System.Data
-@model DataRow
+﻿@using HonestPlates.Data.Models
+@model Restaurant
 
 @{
     // A short description: the first 120 characters, cut with "..."
-    string description = Model["RestaurantDescription"].ToString();
+    string description = Model.Description;
     if (description.Length > 120)
     {
         description = description.Substring(0, 117) + "...";
     }
 }
 
-<a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@Model["RestaurantID"]">
+<a class="restaurant-card" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@Model.RestaurantID">
 
-    @if (Model.Table.Columns.Contains("LogoImageID") && Model["LogoImageID"] != DBNull.Value)
+    @if (Model.LogoImageID > 0)
     {
         <div class="card-img-wrap">
-            <img src="@Url.Content("~/Restaurant/Photo/" + Model["LogoImageID"])" alt="@Model["RestaurantName"] logo" />
+            <img src="@Url.Content("~/Restaurant/Photo/" + Model.LogoImageID)" alt="@Model.Name logo" />
         </div>
     }
 
     <div class="card-body">
-        <h3 class="card-name">@Model["RestaurantName"]</h3>
-        <p class="card-cuisine">@Model["RestaurantCuisine"]</p>
-        <p class="card-rating">@Model["RatingText"]</p>
-        <p class="card-description">@description</
-        <p class="card-location">@Model["RestaurantAddress"], @Model["RestaurantCity"], @Model["RestaurantState"] @Model["RestaurantZipCode"]</p>
+        <h3 class="card-name">@Model.Name</h3>
+        <p class="card-cuisine">@Model.Cuisine</p>
+        <p class="card-rating">@Model.RatingText</p>
+        <p class="card-description">@description</p>
+        <p class="card-location">@Model.Street, @Model.City, @Model.State @Model.Zip</p>
     </div>
 </a>

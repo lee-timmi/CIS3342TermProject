@@ -1,4 +1,6 @@
 ﻿@using System.Data
+@using HonestPlates.Data.Models
+
 @{
     ViewData["Title"] = "Honest Plates - HOME";
 
@@ -76,17 +78,18 @@
 @* Search results as cards: name, cuisine, short description, overall rating, address.
    Came from Project 2 (ASP.NET 4.6 book, scanned, no page): the rptResults card Repeater, rebuilt with a Razor foreach.
    Came from Murach's ASP.NET Core MVC, Chapter 7 Page 247 on tag helpers for links (asp-route-id). *@
+
 @if (ViewBag.Results != null)
 {
-    DataTable results = ViewBag.Results;
+    List<Restaurant> results = ViewBag.Results;
     <section class="results-section">
         <div class="results-header">
-            <p class="results-count">@results.Rows.Count restaurant@(results.Rows.Count == 1 ? "" : "s") found</p>
+            <p class="results-count">@results.Count restaurant@(results.Count == 1 ? "" : "s") found</p>
         </div>
         <div class="results-grid">
-            @foreach (DataRow row in results.Rows)
+            @foreach (Restaurant restaurant in results)
             {
-                <partial name="_RestaurantCard" model="row" />
+                <partial name="_RestaurantCard" model="restaurant" />
             }
         </div>
     </section>
@@ -94,8 +97,8 @@
 
 @if (ViewBag.TopRated != null)
 {
-    DataTable topRated = ViewBag.TopRated;
-    if (topRated.Rows.Count > 0)
+    List<Restaurant> topRated = ViewBag.TopRated;
+    if (topRated.Count > 0)
     {
         <section class="results-section">
             <div class="section-heading">
@@ -103,9 +106,9 @@
                 <h2 class="section-title">Top rated in Philadelphia</h2>
             </div>
             <div class="results-grid">
-                @foreach (DataRow row in topRated.Rows)
+                @foreach (Restaurant restaurant in topRated)
                 {
-                    <partial name="_RestaurantCard" model="row" />
+                    <partial name="_RestaurantCard" model="restaurant" />
                 }
             </div>
         </section>

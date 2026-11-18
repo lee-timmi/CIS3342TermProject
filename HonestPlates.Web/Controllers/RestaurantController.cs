@@ -141,7 +141,12 @@ namespace HonestPlates.Web.Controllers
                 }
                 else
                 {
-                    saved = restaurant.AddRestaurant();
+                    // A new restaurant is added through our Restaurants Web API (POST api/Restaurants, JSON body).
+                    // The API sends the restaurant back with its new RestaurantID (0 = not added).
+                    RestaurantsApi api = new RestaurantsApi();
+                    Restaurant added = api.AddRestaurant(restaurant);
+                    restaurant.RestaurantID = added.RestaurantID;
+                    saved = added.RestaurantID > 0;
                 }
 
                 if (!saved)
@@ -176,10 +181,14 @@ namespace HonestPlates.Web.Controllers
                 return View();
             }
 
-            Restaurant restaurant = new Restaurant();
+            Restaurant restaurant = null;
             try
             {
-                if (!restaurant.LoadByID(id))
+                // The restaurant's details come from our Restaurants Web API (GET api/Restaurants/{id}).
+                RestaurantsApi api = new RestaurantsApi();
+                restaurant = api.GetRestaurant(id);
+
+                if (restaurant.RestaurantID == 0)
                 {
                     ViewBag.Error = "Unable to find restaurant. It may have been removed.";
                     return View();

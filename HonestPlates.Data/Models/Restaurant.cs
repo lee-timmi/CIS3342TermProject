@@ -19,7 +19,10 @@ namespace HonestPlates.Data.Models
         public string Phone { get; set; } = "";
         public string Owner { get; set; } = "";
 
-        
+        // For search result cards (filled by the Restaurants API search; 0 / "" otherwise)
+        public int LogoImageID { get; set; }
+        public string RatingText { get; set; } = "";
+
         public bool LoadByID (int restaurantID)
         {
             DBConnect db = new DBConnect();
@@ -108,6 +111,30 @@ namespace HonestPlates.Data.Models
 
             DataSet ds = db.GetDataSetUsingCmdObj(cmd);
             return ds.Tables[0];
+        }
+
+        // One search or top-rated row -> a Restaurant for a card (only the card's fields are filled).
+        // Used by the Restaurants API search and the home page's Top rated.
+        // Came from Prof. Pascucci's CIS3342 site: CustomerServiceController (one object per row).
+        public static Restaurant FromCardRow (DataRow row)
+        {
+            Restaurant restaurant = new Restaurant();
+            restaurant.RestaurantID = Convert.ToInt32(row["RestaurantID"]);
+            restaurant.Name = row["RestaurantName"].ToString();
+            restaurant.Cuisine = row["RestaurantCuisine"].ToString();
+            restaurant.Description = row["RestaurantDescription"].ToString();
+            restaurant.Street = row["RestaurantAddress"].ToString();
+            restaurant.City = row["RestaurantCity"].ToString();
+            restaurant.State = row["RestaurantState"].ToString();
+            restaurant.Zip = row["RestaurantZipCode"].ToString();
+            restaurant.RatingText = row["RatingText"].ToString();
+
+            if (row["LogoImageID"] != DBNull.Value)
+            {
+                restaurant.LogoImageID = Convert.ToInt32(row["LogoImageID"]);
+            }
+
+            return restaurant;
         }
 
         /* 

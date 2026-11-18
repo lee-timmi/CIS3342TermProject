@@ -57,16 +57,16 @@ public class HomeController : Controller
 
         try
         {
-            RestaurantSearch search = new RestaurantSearch();
-            DataTable results = search.Search(string.Join(",", cuisines), city, state);
+            // The search runs through our Restaurants Web API (GET api/Restaurants/Search).
+            RestaurantsApi api = new RestaurantsApi();
+            List<Restaurant> results = api.Search(string.Join(",", cuisines), city, state);
 
-            if (results.Rows.Count == 0)
+            if (results.Count == 0)
             {
                 ViewBag.Error = "No restaurants found. Try different filters.";
             }
             else
             {
-                search.AddRatings(results);
                 ViewBag.Results = results;
             }
         }
@@ -100,7 +100,14 @@ public class HomeController : Controller
         try
         {
             RestaurantSearch search = new RestaurantSearch();
-            ViewBag.TopRated = search.GetTopRated("Philadelphia", "PA", 6);
+
+            DataTable topRated = search.GetTopRated("Philadelphia", "PA", 6);
+            List<Restaurant> cards = new List<Restaurant>();
+            foreach (DataRow row in topRated.Rows)
+            {
+                cards.Add(Restaurant.FromCardRow(row));
+            }
+            ViewBag.TopRated = cards;
         }
         catch (Exception)
         {
