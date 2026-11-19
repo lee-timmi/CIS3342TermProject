@@ -79,7 +79,7 @@ namespace HonestPlates.Web.Controllers
                         }
                     }
                 }
-            } 
+            }
             catch (Exception)
             {
                 ViewBag.Error = "Unable to load your restaurant right now. Please try again later.";
@@ -180,6 +180,132 @@ namespace HonestPlates.Web.Controllers
             }
         }
 
+        // GET: the rep's own menu (left) and an OpenMenu lookup to use as a reference (right).
+        // Nothing from OpenMenu is saved (OpenMenu API terms 3.2.1).
+        [HttpGet]
+        public IActionResult Menu(string search, string zip, string openMenuID)
+        {
+            IActionResult blocked = CheckRepresentative();
+            if (blocked != null)
+            {
+                return blocked;
+            }
+
+            try
+            {
+                if (!LoadMenuPage(search, zip, openMenuID))
+                {
+                    TempData["Message"] = "Add your restaurant first, then you can enter its menu.";
+                    return RedirectToAction("Manage");
+                }
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Unable to load your menu right now. Please try again later.";
+            }
+
+            return View(new MenuItemForm());
+        }
+
+        // POST /Restaurant/AddMenuItem: adds one item the rep typed in.
+        [HttpPost]
+        public IActionResult AddMenuItem(MenuItemForm form)
+        {
+            IActionResult blocked = CheckRepresentative();
+            if (blocked != null)
+            {
+                return blocked;
+            }
+
+            // Price is optional; if given it must fit DECIMAL(6,2).
+            // Came from Murach's ASP.NET Core MVC, Chapter 11 Page 407 on setting validation messages in code.
+            decimal price = 0;
+            bool hasPrice = false;
+            if (form.Price != null && form.Price.Trim() != "")
+            {
+                if (!decimal.TryParse(form.Price.Trim().Replace("$", ""), out price) || price < 0 || price > 9999.99m)
+                {
+                    ModelState.AddModelError("Price", "Enter a price like 7.49 (up to 9999.99), or leave it blank.");
+                }
+                else
+                {
+                    hasPrice = true;
+                }
+            }
+
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    LoadMenuPage(null, null, null);
+                    return View("Menu", form);
+                }
+
+                Restaurant restaurant = new Restaurant();
+                DataTable mine = restaurant.GetRestaurantByRep(userID);
+                if (mine.Rows.Count == 0)
+                {
+                    return RedirectToAction("Manage");
+                }
+
+                MenuItem item = new MenuItem();
+                item.RestaurantID = Convert.ToInt32(mine.Rows[0]["RestaurantID"]);
+                item.Section = form.Section.Trim();
+                item.ItemName = form.ItemName.Trim();
+                item.Description = form.Description;
+                item.Price = price;
+                item.HasPrice = hasPrice;
+
+                if (item.AddMenuItem(userID))
+                {
+                    TempData["Message"] = item.ItemName + " was added to your menu.";
+                }
+                else
+                {
+                    TempData["Message"] = "We couldn't add that item. Please try again.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Message"] = "We couldn't add that item right now. Please try again later.";
+            }
+
+            return RedirectToAction("Menu");
+        }
+
+        // POST /Restaurant/DeleteMenuItem/12: removes one item (only if it's on this rep's menu).
+        [HttpPost]
+        public IActionResult DeleteMenuItem(int id)
+        {
+            IActionResult blocked = CheckRepresentative();
+            if (blocked != null)
+            {
+                return blocked;
+            }
+
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+            try
+            {
+                MenuItem item = new MenuItem();
+                if (item.DeleteMenuItem(id, userID))
+                {
+                    TempData["Message"] = "The item was removed from your menu.";
+                }
+                else
+                {
+                    TempData["Message"] = "We couldn't find that item.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Message"] = "We couldn't remove that item right now. Please try again later.";
+            }
+
+            return RedirectToAction("Menu");
+        }
+
 
         // Restaurant Profile 5 represents "Restaurant #5"
         public IActionResult Profile(int id)
@@ -244,7 +370,7 @@ namespace HonestPlates.Web.Controllers
 
         // /Restaurant/Photo/12 sends restaurant photo #12 as an image (logos, the profile photo, the gallery).
         // Came from Murach's ASP.NET Core MVC, Chapter 8 Page 283 on returning ActionResult objects (FileContentResult).
-        public IActionResult Photo (int id)
+        public IActionResult Photo(int id)
         {
             try
             {
@@ -253,7 +379,8 @@ namespace HonestPlates.Web.Controllers
                 {
                     return File(image.ImageData, image.ContentType);
                 }
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 // Fall through not found.
             }
@@ -277,6 +404,62 @@ namespace HonestPlates.Web.Controllers
                 // Fall through not found.
             }
             return NotFound();
+        }
+
+        private bool LoadMenuPage(string search, string zip, string openMenuID)
+        {
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+            Restaurant restaurant = new Restaurant();
+            DataTable mine = restaurant.GetRestaurantByRep(userID);
+            if (mine.Rows.Count == 0)
+            {
+                return false;
+            }
+
+            restaurant.LoadByID(Convert.ToInt32(mine.Rows[0]["RestaurantID"]));
+            ViewBag.RestaurantName = restaurant.Name;
+
+            MenuItem menu = new MenuItem();
+            ViewBag.MenuItems = menu.GetMenuItems(restaurant.RestaurantID);
+
+            // The lookup boxes start with the rep's own restaurant name and ZIP
+            if (search == null)
+            {
+                ViewBag.Search = restaurant.Name;
+            }
+            else
+            {
+                ViewBag.Search = search;
+            }
+            if (zip == null)
+            {
+                ViewBag.Zip = restaurant.Zip;
+            }
+            else
+            {
+                ViewBag.Zip = zip;
+            }
+            ViewBag.Sandbox = OpenMenuApi.UseSandbox;
+
+            // OpenMenu lookup, only when the rep asked for it. Its own try/catch, so the rest of the page still loads.
+            OpenMenuApi openMenu = new OpenMenuApi();
+            try
+            {
+                if (search != null)
+                {
+                    ViewBag.Found = openMenu.FindRestaurants(search, ViewBag.Zip);
+                }
+                if (openMenuID != null)
+                {
+                    ViewBag.OpenMenu = openMenu.GetMenu(openMenuID);
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.LookupError = "The OpenMenu lookup isn't working right now. " + ex.Message;
+            }
+
+            return true;
         }
     }
 }

@@ -79,6 +79,10 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Restaurants API: GET restaurant, GET search, POST restaurant (JSON + form data), called by the web app | F. Our Web APIs | Thimmy | ✅ Wed 11/18 |
 | Restaurants API: PUT restaurant (JSON + form data), PUT hours, DELETE photo; Manage edits through the API | F. Our Web APIs | Thimmy | ✅ Wed 11/18 |
 | SP delete photo (TP_DeleteRestaurantPhoto, used by the DELETE photo API) | G. Representative Tools | Thimmy (Tri's item) | ✅ Wed 11/18 |
+| Menu API key + test (Documenu is gone; switched to OpenMenu with the professor's approval) | I. Menu API | Thimmy | ✅ Wed 11/18 |
+| Menu data classes (OpenMenu) | I. Menu API | Thimmy (Tri's item) | ✅ Wed 11/18 |
+| Menu page: look up the restaurant on OpenMenu (reference only) + enter menu items + SP save menu items | I. Menu API | Thimmy | ✅ Wed 11/18 |
+| SP get menu items (TP_GetMenuItems) | I. Menu API | Thimmy (Tri's item) | ✅ Wed 11/18 |
 | Registration page + 3 security questions + SP add user + SP check username | D. Accounts and Login | Thimmy | ✅ Thu 11/12 |
 | Encrypt passwords + answers | D. Accounts and Login | Thimmy | ✅ Mon 11/16 |
 | Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |

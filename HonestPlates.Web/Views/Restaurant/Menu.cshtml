@@ -1,0 +1,175 @@
+﻿@model HonestPlates.Web.Models.MenuItemForm
+@using System.Data
+@using HonestPlates.Data.Models
+@{
+    ViewData["Title"] = "Your Menu";
+    DataTable menuItems = ViewBag.MenuItems;
+    List<OpenMenuRestaurant> found = ViewBag.Found;
+    List<OpenMenuMenu> openMenu = ViewBag.OpenMenu;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Profile.css" asp-append-version="true" />
+}
+
+<div class="container my-5" style="max-width: 1100px;">
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+    
+    <h1 class="mb-1">Your menu</h1>
+    <p class="text-muted mb-4">@ViewBag.RestaurantName: the items you add here are what diners see on your profile.</p>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <div class="row g-5">
+        <h2 class="section-heading">Add an item</h2>
+
+         <form asp-action="AddMenuItem" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Section" class="form-label">Section</label>
+                    <input asp-for="Section" class="form-control" placeholder="e.g. Burgers" />
+                    <span asp-validation-for="Section" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label">Price (optional)</label>
+                    <input asp-for="Price" class="form-control" placeholder="e.g. 7.49" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ItemName" class="form-label">Item name</label>
+                <input asp-for="ItemName" class="form-control" />
+                <span asp-validation-for="ItemName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description (optional)</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-hp">Add item</button>
+         </form>
+
+        <h2 class="section-heading mt-5">On your menu</h2>
+        @if (menuItems == null || menuItems.Rows.Count == 0)
+        {
+            <p class="no-reviews-msg">Your menu is empty. Add your first item above.</p>
+        }
+        else
+        {
+            string lastSection = "";
+
+            foreach (DataRow item in menuItems.Rows)
+            {
+                string sectionName = item["Section"].ToString();
+                if (sectionName != lastSection)
+                {
+                    <h3 class="h6 mt-4 mb-1 text-uppercase text-muted">@sectionName</h3>
+                    lastSection = sectionName;
+                }
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2">
+                    <div>
+                        <strong>@item["ItemName"]</strong>
+                        @if (item["Description"] != DBNull.Value)
+                        {
+                            <div class="small text-muted">@item["Description"]</div>
+                        }
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        @* Came from Murach's ASP.NET Core MVC, Chapter 7 Page 249 on formatting numbers (C = currency). *@
+                        @if (item["Price"] != DBNull.Value)
+                        {
+                            <span>@Convert.ToDecimal(item["Price"]).ToString("C")</span>
+                        }
+                        <form asp-action="DeleteMenuItem" asp-route-id="@item["MenuItemID"]" method="post"
+                        onsubmit="return confirm('Remove @item["ItemName"] from your menu?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @* RIGHT: OpenMenu lookup, a reference only (shown for this page view, never saved) *@
+    <div class="col-lg-6">
+
+        <h2 class="section-heading">Look it up on OpenMenu</h2>
+        <p class="text-muted small">
+            Find your restaurant on OpenMenu and use its listing as a reference while you add your items. Nothing from OpenMenu is saved.
+        </p>
+
+        @if (ViewBag.Sandbox == true)
+        {
+            <div class="alert alert-secondary small">Test mode: OpenMenu's sample restaurant is shown (no API calls used).</div>
+        }
+
+        @* method="get": a search only changes the URL, nothing is posted or saved. *@
+        <form asp-action="Menu" method="get" class="row g-2 mb-3">
+            <div class="col-7"><input name="search" value="@ViewBag.Search" class="form-control" placeholder="Restaurant name" /></div>
+            <div class="col-3"><input name="zip" value="@ViewBag.Zip" class="form-control" maxlength="5" placeholder="ZIP" /></div>
+            <div class="col-2"><button type="submit" class="btn-hp w-100">Search</button></div>
+        </form>
+
+        @if (ViewBag.LookupError != null)
+        {
+            <p class="text-danger">@ViewBag.LookupError</p>
+        }
+
+        @if (found != null)
+        {
+            if (found.Count == 0)
+            {
+                <p class="no-reviews-msg">No restaurants with that name were found on OpenMenu in that ZIP code.</p>
+            }
+            else
+            {
+                foreach (OpenMenuRestaurant match in found)
+                {
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <strong>@match.RestaurantName</strong>
+                            <div class="small text-muted">@match.Address, @match.City, @match.State @match.PostalCode</div>
+                        </div>
+                        <a asp-action="Menu" asp-route-search="@ViewBag.Search" asp-route-zip="@ViewBag.Zip"
+                           asp-route-openMenuID="@match.Id" class="btn-hp btn-hp-outline">View menu</a>
+                    </div>
+                }
+            }
+        }
+
+        @if (openMenu != null)
+        {
+            <h3 class="h5 mt-4">OpenMenu's listing</h3>
+            if (openMenu.Count == 0)
+            {
+                <p class="no-reviews-msg">This restaurant has no menu on OpenMenu.</p>
+            }
+            foreach (OpenMenuMenu m in openMenu)
+            {
+                foreach (OpenMenuGroup group in m.Groups)
+                {
+                    <h4 class="h6 mt-3 mb-1 text-uppercase text-muted">@group.GroupName</h4>
+                    foreach (OpenMenuItem dish in group.Items)
+                    {
+                        <div class="d-flex justify-content-between border-bottom py-1 small">
+                            <span>@dish.Name</span>
+                            <span class="text-muted">@dish.PriceText()</span>
+                        </div>
+                    }
+                }
+            }
+        }
+        </div>
+    </div>
+</div>
