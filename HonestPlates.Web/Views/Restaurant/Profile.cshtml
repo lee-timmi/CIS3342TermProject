@@ -10,9 +10,10 @@
     int logoID = ViewBag.LogoID == null ? 0 : ViewBag.LogoID;
     string bannerUrl = profilePhotoID > 0 ? Url.Content("~/Restaurant/Photo/" + profilePhotoID) : Url.Content("~/images/hero.jpg");
 
-    DataTable? photos = ViewBag.Photos;
-    DataTable? reviews = ViewBag.Reviews;
-    Rating? rating = ViewBag.Rating;
+    DataTable menuItems = ViewBag.MenuItems;
+    DataTable photos = ViewBag.Photos;
+    DataTable reviews = ViewBag.Reviews;
+    Rating rating = ViewBag.Rating;
 }
 
 @section Styles {
@@ -45,7 +46,37 @@ else
             <div class="profile-about">
                 <h2 class="section-heading">About</h2>
                 <p class="profile-description">@Model.Description</p>
-                <a asp-action="Reserve" asp-route-id="@Model.RestaurantID" class="btn-hp mt-2">Make a reservation</a>
+                <a asp-action="Reserve" asp-route-id="@Model.RestaurantID" class="btn-hp mt-2">Make a reservation</a><br />
+
+                @if (menuItems != null && menuItems.Rows.Count > 0)
+                {
+                    string currentSection = "";
+                    <h2 class="section-heading profile-menu-heading">Menu</h2>
+                    <div class="profile-menu">
+                        @foreach (DataRow item in menuItems.Rows)
+                        {
+                            string itemSection = item["Section"].ToString();
+                            if (itemSection != currentSection)
+                            {
+                                currentSection = itemSection;
+                                <h3 class="menu-section">@itemSection</h3>
+                            }
+                            <div class="menu-item">
+                                <div class="menu-item-top">
+                                    <span class="menu-item-name">@item["ItemName"]</span>
+                                    @if (item["Price"] != DBNull.Value)
+                                    {
+                                        <span class="menu-item-price">@Convert.ToDecimal(item["Price"]).ToString("c")</span>
+                                    }
+                                </div>
+                                @if (item["Description"] != DBNull.Value && item["Description"].ToString() != "")
+                                {
+                                    <p class="menu-item-desc">@item["Description"]</p>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
             </div>
 
             <aside class="profile-details">
@@ -75,7 +106,7 @@ else
                             {
                                 int day = Convert.ToInt32(row["DayOfWeek"]);
                                 <tr class="@(day == today ? "hours-today" : null)">
-                                    <td>@((DayOfWeek)day)</td>
+                                    <th>@(((DayOfWeek)day).ToString().Substring(0, 3))</th>
                                     <td>@Model.FormatHours(row)</td>
                                 </tr>
                             }

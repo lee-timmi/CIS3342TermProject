@@ -93,6 +93,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Sentiment model: train + test (ML.NET, 79.15% accuracy on held-back reviews) | K. Learning Opportunities | Thimmy | ✅ Thu 11/19 |
 | Positive / negative badge on reviews + "% positive" on the profile (edited reviews re-labeled; trainer fills in any missing) | K. Learning Opportunities | Thimmy | ✅ Thu 11/19 |
 | Saved searches + recently viewed (System.Text.Json serialization into TP_UserHistory) | J. Serialization | Thimmy | ✅ Thu 11/19 |
+| Menu on the profile (grouped by section; price suggestions still to do) | I. Menu API | Thimmy (Tri's item) | ✅ Thu 11/19 |
 
 ---
 

@@ -365,6 +365,18 @@ namespace HonestPlates.Web.Controllers
                 ViewBag.ReviewsError = "Unable to load reviews right now. Please try again later.";
             }
 
+            // Menu: the restaurant's menu items (TP_GetMenuItems).
+            // Separate try, so the rest of the profile still shows.
+            try
+            {
+                MenuItem menu = new MenuItem();
+                ViewBag.MenuItems = menu.GetMenuItems(id);
+            }
+            catch (Exception)
+            {
+                // No menu section if it can't load
+            }
+
             // Photos: the gallery, plus the Profile photo for the banner and the Logo.
             // Came from Project 2: ShowPhotos with RestaurantImage.FindImageID.
             try

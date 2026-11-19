@@ -439,3 +439,49 @@
     border-radius: 999px;
     padding: 0.15rem 0.6rem;
 }
+
+/* Menu on the profile. */
+.profile-menu-heading {
+    margin-top: 2rem;
+}
+
+.menu-section {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a7258;
+    margin: 1.1rem 0 0.4rem;
+}
+
+.menu-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #e8e0d8;
+}
+
+.menu-item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.menu-item-name {
+    font-family: 'Noto Serif', serif;
+    font-weight: 700;
+    color: #1a1210;
+}
+
+.menu-item-price {
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 600;
+    color: #c43030;
+    white-space: nowrap;
+}
+
+.menu-item-desc {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #5a4a3a;
+    margin: 0.15rem 0 0;
+}
