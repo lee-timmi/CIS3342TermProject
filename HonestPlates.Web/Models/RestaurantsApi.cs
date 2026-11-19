@@ -67,5 +67,77 @@ namespace HonestPlates.Web.Models
             return JsonSerializer.Deserialize<Restaurant>(content, jsonOptions);
         }
 
+        // PUT api/Restaurants/{id}/Form (form data): saves changes to the rep's restaurant. Returns true if saved.
+        // This is our "form data" version; AddRestaurant above is the JSON version.
+        public bool UpdateRestaurant(Restaurant restaurant)
+        {
+            Dictionary<string, string> fields = new Dictionary<string, string>();
+            fields.Add("RepresentativeUserID", restaurant.RepresentativeUserID.ToString());
+            fields.Add("Name", Text(restaurant.Name));
+            fields.Add("Street", Text(restaurant.Street));
+            fields.Add("City", Text(restaurant.City));
+            fields.Add("State", Text(restaurant.State));
+            fields.Add("Zip", Text(restaurant.Zip));
+            fields.Add("Cuisine", Text(restaurant.Cuisine));
+            fields.Add("Description", Text(restaurant.Description));
+            fields.Add("Phone", Text(restaurant.Phone));
+            fields.Add("Website", Text(restaurant.Website));
+            fields.Add("SocialMedia", Text(restaurant.SocialMedia));
+            fields.Add("Owner", Text(restaurant.Owner));
+            FormUrlEncodedContent body = new FormUrlEncodedContent(fields);
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = client.PutAsync(baseUrl + restaurant.RestaurantID + "/Form", body).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("The Restaurants API answered " + (int)response.StatusCode);
+            }
+
+            string content = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<bool>(content);
+        }
+
+        // PUT api/Restaurants/{id}/Hours (JSON body): saves all 7 days. Returns true if saved. 
+        public bool SaveHours(int restaurantID, RestaurantHours hours)
+        {
+            string json = JsonSerializer.Serialize(hours);
+            StringContent body = new StringContent(json);
+            body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = client.PutAsync(baseUrl + restaurantID + "/Hours", body).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("The Restaurants API answered " + (int)response.StatusCode);
+            }
+
+            string content = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<bool>(content);
+        }
+
+        // DELETE api/Restaurants/{id}/Photos/{imageID}?representativeUserID=...: for Tri's photo manager.
+        public bool DeletePhoto(int restaurantID, int imageID, int representativeUserID)
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = client.DeleteAsync(baseUrl + restaurantID + "/Photos/" + imageID +
+                                                              "?representativeUserID=" + representativeUserID).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("The Restaurants API answered " + (int)response.StatusCode);
+            }
+
+            string content = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<bool>(content);
+        }
+
+        // A blank instead of null, so every form field is sent
+        private string Text(string value)
+        {
+            if (value == null)
+            {
+                return "";
+            }
+            return value;
+        }
     }
 }

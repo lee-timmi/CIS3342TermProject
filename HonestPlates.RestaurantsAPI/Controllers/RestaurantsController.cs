@@ -75,6 +75,54 @@ namespace HonestPlates.RestaurantsAPI.Controllers
             return saveNewRestaurant(restaurant);
         }
 
+        // ---------- PUT Methods -------------
+
+        // PUT api/Restaurants/36 (JSON body): saves changes to a restaurant.
+        // Returns true if it was saved; false if it isn't this rep's restaurant, fields are missing, or nothing changed
+        [HttpPost("{id}")]
+        public Boolean UpdateRestaurant(int id, [FromBody] Restaurant restaurant)
+        {
+            return SaveChanges(id, restaurant);
+        }
+
+        // PUT api/Restaurants/36/Form (form data): the same as above, for callers that send form fields.
+        [HttpPut("{id}/Form")]
+        public Boolean UpdateRestaurantForm(int id, [FromForm] Restaurant restaurant)
+        {
+            return SaveChanges(id, restaurant);
+        }
+
+        // PUT api/Restaurants/36/Hours (JSON body): saves all 7 days of hours, only if this rep owns the restaurant.
+        [HttpPut("{id}/Hours")]
+        public Boolean SaveHours(int id, [FromBody] RestaurantHours hours)
+        {
+            if (hours == null)
+            {
+                return false;
+            }
+
+            Restaurant restaurant = new Restaurant();
+            if (!restaurant.LoadByID(id) || restaurant.RepresentativeUserID != hours.RepresentativeUserID)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < 7; i++)
+            {
+                restaurant.SaveHours(i, hours.Closed[i], hours.OpenTime[i], hours.CloseTime[i]);
+            }
+            return true;
+        }
+
+        // DELETE api/Restaurants/36/Photos/9?representativeUserID=4: deletes one of the restaurant's photos.
+        // Returns true if it was deleted; false if it isn't this rep's restaurant or photo.
+        [HttpDelete("{id}/Photos/{imageID}")]
+        public Boolean DeletePhoto(int id, int imageID, int representativeUserID)
+        {
+            RestaurantImage image = new RestaurantImage();
+            return image.DeletePhoto(imageID, id, representativeUserID);
+        }
+
         // ------- Methods ---------
         private Restaurant saveNewRestaurant(Restaurant restaurant)
         {
@@ -98,6 +146,20 @@ namespace HonestPlates.RestaurantsAPI.Controllers
         private bool IsBlank(string value)
         {
             return value == null || value.Trim() == "";
+        }
+
+        private Boolean SaveChanges(int id, Restaurant restaurant)
+        {
+            if (restaurant == null || restaurant.RepresentativeUserID <= 0 || IsBlank(restaurant.Name) ||
+                IsBlank(restaurant.Street) || IsBlank(restaurant.City) || IsBlank(restaurant.State) ||
+                IsBlank(restaurant.Zip) || IsBlank(restaurant.Cuisine) || IsBlank(restaurant.Description) ||
+                IsBlank(restaurant.Phone))
+            {
+                return false;
+            }
+
+            restaurant.RestaurantID = id;
+            return restaurant.UpdateRestaurant();    // TP_UpdateRestaurant only changes it if RepresentativeUserID owns it
         }
     }
 

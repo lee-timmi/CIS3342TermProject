@@ -133,17 +133,19 @@ namespace HonestPlates.Web.Controllers
 
                 // double check the representative id
                 DataTable mine = restaurant.GetRestaurantByRep(userID);
+
+                // Saving goes through our Restaurants Web API: PUT (form data) to edit, POST (JSON) to add.
+                RestaurantsApi api = new RestaurantsApi();
                 bool saved;
                 if (mine.Rows.Count > 0)
                 {
                     restaurant.RestaurantID = Convert.ToInt32(mine.Rows[0]["RestaurantID"]);
-                    saved = restaurant.UpdateRestaurant();
+                    saved = api.UpdateRestaurant(restaurant);
                 }
                 else
                 {
-                    // A new restaurant is added through our Restaurants Web API (POST api/Restaurants, JSON body).
                     // The API sends the restaurant back with its new RestaurantID (0 = not added).
-                    RestaurantsApi api = new RestaurantsApi();
+                    // Came from Prof. Pascucci's CIS3342 site: TeamWebAPI_Example2 (POST an object as JSON).
                     Restaurant added = api.AddRestaurant(restaurant);
                     restaurant.RestaurantID = added.RestaurantID;
                     saved = added.RestaurantID > 0;
@@ -155,9 +157,17 @@ namespace HonestPlates.Web.Controllers
                     return View(form);
                 }
 
-                for (int i = 0; i < 7; i++)
+                // All 7 days in one API call (PUT api/Restaurants/{id}/Hours, JSON)
+                RestaurantHours hours = new RestaurantHours();
+                hours.RepresentativeUserID = userID;
+                hours.Closed = form.Closed;
+                hours.OpenTime = form.OpenTime;
+                hours.CloseTime = form.CloseTime;
+
+                if (!api.SaveHours(restaurant.RestaurantID, hours))
                 {
-                    restaurant.SaveHours(i, form.Closed[i], form.OpenTime[i], form.CloseTime[i]);
+                    ModelState.AddModelError("", "Your details were saved, but the hours weren't. Please try again.");
+                    return View(form);
                 }
 
                 TempData["Message"] = restaurant.Name + " was saved.";

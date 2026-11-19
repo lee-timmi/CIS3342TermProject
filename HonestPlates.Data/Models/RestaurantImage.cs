@@ -10,7 +10,7 @@ namespace HonestPlates.Data.Models
         public const int MaxImageBytes = 1048576; // 1 MB
 
         public int ImageID { get; set; }
-        public byte[]? ImageData { get; set; }
+        public byte[] ImageData { get; set; }
         public string ContentType { get; set; } = "";
 
         // Restaurant photo (imageid, caption, imagecategory)
@@ -58,6 +58,21 @@ namespace HonestPlates.Data.Models
             ImageData = (byte[])row["ImageData"];
             ContentType = row["ImageContentType"].ToString();
             return true;
+        }
+
+        // Deletes one photo, only if it's this restaurant's and this rep owns the restaurant.
+        // Returns false if nothing was deleted.
+        public bool DeletePhoto(int imageID, int restaurantID, int representativeUserID)
+        {
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_DeleteRestaurantPhoto";
+            cmd.Parameters.AddWithValue("@ImageID", imageID);
+            cmd.Parameters.AddWithValue("@RestaurantID", restaurantID);
+            cmd.Parameters.AddWithValue("@RepresentativeUserID", representativeUserID);
+
+            return db.DoUpdateUsingCmdObj(cmd) > 0;
         }
     }
 }
