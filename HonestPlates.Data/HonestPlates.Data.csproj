@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.1" />
+    <PackageReference Include="Microsoft.ML" Version="6.0.0" />
   </ItemGroup>
 
   <!-- Shared Project 2 classes (used by the website and both APIs), not converted to .NET 8 yet.
@@ -16,6 +17,11 @@
     <Compile Remove="Models\ListHelper.cs" />
     <Compile Remove="Models\Validation.cs" />
     <None Include="Models\ListHelper.cs;Models\Validation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="MLModels\SentimentModel.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

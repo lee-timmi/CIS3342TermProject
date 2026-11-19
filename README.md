@@ -90,6 +90,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
 | Encrypt the login cookie | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |
 | Forgot username / reset password (1 random security question) + SPs | D. Accounts and Login | Thimmy (Tri's item) | ✅ Tue 11/17 |
+| Sentiment model: train + test (ML.NET, 79.15% accuracy on held-back reviews) | K. Learning Opportunities | Thimmy | ✅ Thu 11/19 |
 
 ---
 
@@ -99,6 +100,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | `RestaurantReview/` | Project 1 & 2 web app |
 | `Utilities/` | Shared database connection class (`Connection.cs` is git-ignored and kept locally on each computer) |
 | `Database/` | Stored procedures (`StoredProcedures/`) |
+| `HonestPlates.SentimentTrainer/` | Trains + tests the review sentiment model (ML.NET) and saves it to `HonestPlates.Data/MLModels/`. Data: UCI "Sentiment Labelled Sentences" (Yelp), Kotzias et al., KDD 2015, CC BY 4.0 |
 | `Lab01_Simple_Homepage/` | Course homepage (`index.html`) |
 | `Notes/` | ERD and project planning |
 | `Resources/` | Course textbooks (PDFs, stored with Git LFS) |
