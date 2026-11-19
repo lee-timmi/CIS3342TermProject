@@ -368,6 +368,119 @@ namespace HonestPlates.Web.Controllers
             return View(restaurant);
         }
 
+        // GET/POST for Reservation
+        [HttpGet]
+        public IActionResult Reserve(int id)
+        {
+            try
+            {
+                Reservation reservation = new Reservation();
+                DataRow contact = reservation.GetRestaurantContact(id);
+                if (contact == null)
+                {
+                    ViewBag.Error = "Unable to find that restaurant. Please search again.";
+                    return View(new ReservationForm());
+                }
+
+                ReservationForm form = new ReservationForm();
+                form.RestaurantID = id;
+                form.RestaurantName = contact["RestaurantName"].ToString();
+                if (HttpContext.Session.GetString("FirstName") != null)
+                {
+                    form.ContactName = HttpContext.Session.GetString("FirstName");
+                }
+                return View(form);
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Reservations aren't working right now. Please try again later.";
+                return View(new ReservationForm());
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Reserve(ReservationForm form)
+        {
+            try
+            {
+                // Rules the attributes can't check: a real date + time, in the future, while the restaurant is open.
+                // Came from Murach's ASP.NET Core MVC, Chapter 11 Page 407 on setting validation messages in code.
+                DateTime when = DateTime.MinValue;
+                if (form.Date != null && form.Time != null)
+                {
+                    if (!DateTime.TryParse(form.Date + " " + form.Time, out when))
+                    {
+                        ModelState.AddModelError("Date", "Pick a real date and time.");
+                    }
+                    else if (when <= DateTime.Now)
+                    {
+                        ModelState.AddModelError("Date", "The reservation has to be in the future.");
+                    }
+                    else
+                    {
+                        string hoursProblem = CheckOpen(form.RestaurantID, when);
+                        if (hoursProblem != "")
+                        {
+                            ModelState.AddModelError("Time", hoursProblem);
+                        }
+                    }
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View(form);
+                }
+
+                Reservation reservation = new Reservation();
+                DataRow contact = reservation.GetRestaurantContact(form.RestaurantID);
+                if (contact == null)
+                {
+                    ViewBag.Error = "Unable to find that restaurant. Please search again.";
+                    return View(form);
+                }
+
+                reservation.RestaurantID = form.RestaurantID;
+                reservation.RestaurantName = contact["RestaurantName"].ToString();
+                if (HttpContext.Session.GetInt32("UserID") != null)
+                {
+                    reservation.UserID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+                }
+                reservation.ContactName = form.ContactName.Trim();
+                reservation.ContactPhone = form.ContactPhone.Trim();
+                reservation.ContactEmail = form.ContactEmail.Trim();
+                reservation.ReservationDateTime = when;
+                reservation.PartySize = form.PartySize;
+                reservation.SpecialRequests = form.SpecialRequests;
+
+                if (!reservation.AddReservation())
+                {
+                    ModelState.AddModelError("", "We couldn't save your reservation. Please try again.");
+                    return View(form);
+                }
+
+                // Email the rep. The reservation is already saved, so a failed email is only a warning.
+                // (smtp.temple.edu only sends from the published site.)
+                if (contact["RepEmail"] != DBNull.Value)
+                {
+                    try
+                    {
+                        reservation.SendNewReservationEmail(contact["RepEmail"].ToString(), contact["RepFirstName"].ToString());
+                    }
+                    catch (Exception)
+                    {
+                        ViewBag.EmailWarning = "Your reservation was saved, but we couldn't email the restaurant. They'll still see it on their dashboard.";
+                    }
+                }
+
+                return View("Reserved", reservation);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "We couldn't save your reservation right now. Please try again later.");
+                return View(form);
+            }
+        }
+
         // /Restaurant/Photo/12 sends restaurant photo #12 as an image (logos, the profile photo, the gallery).
         // Came from Murach's ASP.NET Core MVC, Chapter 8 Page 283 on returning ActionResult objects (FileContentResult).
         public IActionResult Photo(int id)
@@ -460,6 +573,49 @@ namespace HonestPlates.Web.Controllers
             }
 
             return true;
+        }
+
+        private string CheckOpen(int restaurantID, DateTime when)
+        {
+            Restaurant restaurant = new Restaurant();
+            restaurant.RestaurantID = restaurantID;
+            DataTable hours = restaurant.GetHours();
+
+            foreach (DataRow row in hours.Rows)
+            {
+                if (Convert.ToInt32(row["DayOfWeek"]) != (int)when.DayOfWeek)
+                {
+                    continue;
+                }
+
+                if (Convert.ToBoolean(row["IsClosed"]))
+                {
+                    return "The restaurant is closed on " + when.DayOfWeek + "s. Please pick another day.";
+                }
+
+                if (row["OpenTime"] != DBNull.Value && row["CloseTime"] != DBNull.Value)
+                {
+                    TimeSpan open = TimeSpan.Parse(row["OpenTime"].ToString());
+                    TimeSpan close = TimeSpan.Parse(row["CloseTime"].ToString());
+                    TimeSpan time = when.TimeOfDay;
+
+                    bool isOpen;
+                    if (close > open)
+                    {
+                        isOpen = time >= open && time < close;          // e.g. 11:00 AM - 10:00 PM
+                    }
+                    else
+                    {
+                        isOpen = time >= open || time < close;          // closes after midnight, e.g. 5 PM - 2 AM
+                    }
+
+                    if (!isOpen)
+                    {
+                        return "The restaurant is open " + restaurant.FormatHours(row) + " that day. Please pick a time in those hours.";
+                    }
+                }
+            }
+            return "";
         }
     }
 }

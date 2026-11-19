@@ -83,6 +83,8 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Menu data classes (OpenMenu) | I. Menu API | Thimmy (Tri's item) | ✅ Wed 11/18 |
 | Menu page: look up the restaurant on OpenMenu (reference only) + enter menu items + SP save menu items | I. Menu API | Thimmy | ✅ Wed 11/18 |
 | SP get menu items (TP_GetMenuItems) | I. Menu API | Thimmy (Tri's item) | ✅ Wed 11/18 |
+| Make a reservation + SP add reservation (anyone can book; refuses past times and closed hours) | H. Reviewer Tools and Reservations | Thimmy | ✅ Wed 11/18 |
+| Email the rep about new reservations (sends only from the published site) | G. Representative Tools | Thimmy | ✅ Wed 11/18 |
 | Registration page + 3 security questions + SP add user + SP check username | D. Accounts and Login | Thimmy | ✅ Thu 11/12 |
 | Encrypt passwords + answers | D. Accounts and Login | Thimmy | ✅ Mon 11/16 |
 | Login page + save/delete login cookie + SP log in user | D. Accounts and Login | Thimmy (Tri's item) | ✅ Mon 11/16 |

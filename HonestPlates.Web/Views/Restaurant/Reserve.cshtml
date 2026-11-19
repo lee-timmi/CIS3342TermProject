@@ -1,0 +1,81 @@
+﻿@model HonestPlates.Web.Models.ReservationForm
+@{
+    ViewData["Title"] = "Make a Reservation";
+}
+
+<div class="container my-5" style="max-width: 640px;">
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+        <a asp-controller="Home" asp-action="Index" class="btn-hp">Back to search</a>
+    }
+    else
+    {
+        <h1 class="mb-1">Reserve a table</h1>
+        <p class="text-muted mb-4">at <strong>@Model.RestaurantName</strong>. The restaurant will confirm your request.</p>
+
+        <form asp-action="Reserve" method="post">
+             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            @* Came from Murach's ASP.NET Core MVC, Chapter 4 Page 165 on hidden fields in Add and Edit pages. *@
+            <input type="hidden" asp-for="RestaurantID" />
+            <input type="hidden" asp-for="RestaurantName" />
+
+            <div class="row">
+                 <div class="col-md-6 mb-3">
+                    <label asp-for="Date" class="form-label">Date</label>
+                    <input asp-for="Date" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="Time" class="form-label">Time</label>
+                    <input asp-for="Time" type="time" class="form-control" />
+                    <span asp-validation-for="Time" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="PartySize" class="form-label">Party size</label>
+                    @* Came from Murach's ASP.NET Core MVC, Chapter 7 Page 230 on inline loops. *@
+                    <select asp-for="PartySize" class="form-select">
+                        @for (int n = 1; n <= 20; n++)
+                        {
+                            <option value="@n">@n</option>
+                        }
+                    </select>
+                    <span asp-validation-for="PartySize" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ContactName" class="form-label">Your name</label>
+                <input asp-for="ContactName" class="form-control" />
+                <span asp-validation-for="ContactName" class="text-danger"></span>
+            </div>
+
+             <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ContactPhone" class="form-label">Phone</label>
+                    <input asp-for="ContactPhone" class="form-control" placeholder="e.g. 215-555-1234" />
+                    <span asp-validation-for="ContactPhone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ContactEmail" class="form-label">Email</label>
+                    <input asp-for="ContactEmail" class="form-control" />
+                    <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SpecialRequests" class="form-label">Special requests (optional)</label>
+                <textarea asp-for="SpecialRequests" class="form-control" rows="3" placeholder="e.g. a birthday, a high chair, a quiet table"></textarea>
+                <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-3 mt-4">
+                <button type="submit" class="btn-hp">Request reservation</button>
+                <a asp-action="Profile" asp-route-id="@Model.RestaurantID" class="btn-hp btn-hp-outline">Cancel</a>
+            </div>
+        </form>
+    }
+</div>

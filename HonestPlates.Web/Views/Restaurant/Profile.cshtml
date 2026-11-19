@@ -45,6 +45,7 @@ else
             <div class="profile-about">
                 <h2 class="section-heading">About</h2>
                 <p class="profile-description">@Model.Description</p>
+                <a asp-action="Reserve" asp-route-id="@Model.RestaurantID" class="btn-hp mt-2">Make a reservation</a>
             </div>
 
             <aside class="profile-details">

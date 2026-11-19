@@ -1,0 +1,27 @@
+﻿@model HonestPlates.Data.Models.Reservation
+@{
+    ViewData["Title"] = "Reservation Requested";
+}
+
+<div class="container my-5" style="max-width: 640px;">
+    <img src="~/images/hero.jpg" alt="Food at an Honest Plates restaurant" class="page-banner" />
+
+    <h1 class="mb-3">Request sent!</h1>
+    <p>Your table request at <strong>@Model.RestaurantName</strong> is saved and waiting for the restaurant to confirm it.</p>
+
+    @if (ViewBag.EmailWarning != null)
+    {
+        <div class="alert alert-warning">@ViewBag.EmailWarning</div>
+    }
+
+    <ul class="list-unstyled mb-4">
+        <li><strong>When:</strong> @Model.ReservationDateTime.ToString("dddd, MMMM d, yyyy 'at' h:mm tt")</li>
+        <li><strong>Party of:</strong> @Model.PartySize</li>
+        <li><strong>Name:</strong> @Model.ContactName</li>
+        <li><strong>Phone:</strong> @Model.ContactPhone</li>
+        <li><strong>Email:</strong> @Model.ContactEmail</li>
+        <li><strong>Status:</strong> @Model.Status</li>
+    </ul>
+
+    <a asp-action="Profile" asp-route-id="@Model.RestaurantID" class="btn-hp">Back to @Model.RestaurantName</a>
+</div>

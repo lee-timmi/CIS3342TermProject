@@ -14,9 +14,8 @@
        They're skipped by the build. Delete a class's line once it's converted. -->
   <ItemGroup>
     <Compile Remove="Models\ListHelper.cs" />
-    <Compile Remove="Models\Reservation.cs" />
     <Compile Remove="Models\Validation.cs" />
-    <None Include="Models\ListHelper.cs;Models\Reservation.cs;Models\Validation.cs" />
+    <None Include="Models\ListHelper.cs;Models\Validation.cs" />
   </ItemGroup>
 
 </Project>
