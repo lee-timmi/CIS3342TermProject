@@ -329,3 +329,74 @@
     color: var(--dark);
     margin: 0.35rem 0 0;
 }
+
+/* Recently viewed + saved searches (serialization). Standard CSS, not in the textbooks. */
+.history-section {
+    padding-bottom: 1rem;
+}
+
+.history-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.history-pill {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--dark);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    text-decoration: none;
+}
+
+.history-pill:hover {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.history-heading {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brown);
+    text-align: center;
+    margin: 1.25rem 0 0.6rem;
+}
+
+.history-pill a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.history-message {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--muted);
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+.save-search-form,
+.remove-search-form {
+    display: inline;
+}
+
+.remove-search {
+    border: none;
+    background: none;
+    color: var(--brown);
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.remove-search:hover {
+    color: var(--red);
+}

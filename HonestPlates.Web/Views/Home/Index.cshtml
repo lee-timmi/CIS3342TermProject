@@ -83,9 +83,29 @@
 {
     List<Restaurant> results = ViewBag.Results;
     <section class="results-section">
+        
         <div class="results-header">
             <p class="results-count">@results.Count restaurant@(results.Count == 1 ? "" : "s") found</p>
+
+            @* Save this search (serialization): logged-in users only.
+            Hidden fields send the same cuisines + location back. *@
+            @if (ViewBag.History != null)
+            {
+                <form method="post" asp-action="SaveSearch" class="save-search-form">
+                    @foreach (string cuisine in selectedCuisines)
+                    {
+                        <input type="hidden" name="cuisines" value="@cuisine" />
+                    }
+                    <input type="hidden" name="location" value="@selectedLocation" />
+                    <button type="submit" class="btn-hp btn-hp-outline">☆ Save this search</button>
+                </form>
+            }
+            @if (TempData["SaveSearchMessage"] != null)
+            {
+                <p class="history-message">@TempData["SaveSearchMessage"]</p>
+            }
         </div>
+
         <div class="results-grid">
             @foreach (Restaurant restaurant in results)
             {
@@ -93,6 +113,55 @@
             }
         </div>
     </section>
+}
+
+@* Saved searches + recently viewed (serialization), for logged-in users. *@
+@if (ViewBag.History != null)
+{
+    UserHistory history = ViewBag.History;
+    if (history.SavedSearches.Count > 0 || history.RecentlyViewed.Count > 0 || TempData["HistoryMessage"] != null)
+    {
+         <section class="results-section history-section">
+            <div class="section-heading">
+                <p class="section-eyebrow">Pick up where you left off</p>
+                <h2 class="section-title">Your searches and restaurants</h2>
+            </div>
+
+            @if (TempData["HistoryMessage"] != null)
+            {
+                <p class="history-message">@TempData["HistoryMessage"]</p>
+            }
+
+            @if (history.SavedSearches.Count > 0)
+            {
+                <h3 class="history-heading">Saved searches</h3>
+                <div class="history-links">
+                    @for (int i = 0; i < history.SavedSearches.Count; i++)
+                    {
+                        SavedSearch saved = history.SavedSearches[i];
+                        <span class="history-pill">
+                            <a href="@(Url.Action("Search") + saved.QueryString())">@saved.Description()</a>
+                            <form method="post" asp-action="RemoveSearch" class="remove-search-form">
+                                <input type="hidden" name="index" value="@i" />
+                                <button type="submit" class="remove-search" title="Remove this saved search">✕</button>
+                            </form>
+                        </span>
+                    }
+                </div>
+            }
+
+            @if (history.RecentlyViewed.Count > 0)
+            {
+                <h3 class="history-heading">Recently viewed</h3>
+                <div class="history-links">
+                    @foreach (RecentView view in history.RecentlyViewed)
+                    {
+                        <a class="history-pill" asp-controller="Restaurant" asp-action="Profile" asp-route-id="@view.RestaurantID">@view.Name</a>
+                    }
+                </div>
+            }
+         </section>
+    }
 }
 
 @if (ViewBag.TopRated != null)

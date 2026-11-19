@@ -23,6 +23,7 @@ public class HomeController : Controller
     {
         LoadSearchLists();
         LoadTopRated();
+        LoadHistory();
         return View();
     }
 
@@ -48,6 +49,7 @@ public class HomeController : Controller
         ViewBag.SelectedCuisines = cuisines;
         ViewBag.SelectedLocation = location;
         LoadSearchLists();
+        LoadHistory();
 
         if (cuisines.Count == 0 && city == "" && state == "")
         {
@@ -115,9 +117,98 @@ public class HomeController : Controller
         }
     }
 
+    private void LoadHistory()
+    {
+        if (HttpContext.Session.GetInt32("UserID") == null)
+        {
+            return;
+        }
+
+        try
+        {
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+            ViewBag.History = UserHistory.Load(userID);
+        }
+        catch (Exception)
+        {
+            // No history section if it can't load; the rest of the page still works
+        }
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    // Saves the current search to the user's history (serialization), then goes back to the same results.
+    [HttpPost]
+    public IActionResult SaveSearch(List<string> cuisines, string location)
+    {
+        if (HttpContext.Session.GetInt32("UserID") == null)
+        {
+            TempData["Message"] = "Log in to save searches.";
+            return RedirectToAction("Login", "Account");
+        }
+        if (cuisines == null) cuisines = new List<string>();
+        if (location == null) location = "";
+
+        try
+        {
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+            UserHistory history = UserHistory.Load(userID);
+            string error = history.AddSearch(cuisines, location);
+
+            if (error == "")
+            {
+                history.Save(userID);
+                TempData["SaveSearchMessage"] = "Search saved. You'll find it on the home page.";
+            }
+            else
+            {
+                TempData["SaveSearchMessage"] = error;
+            }
+        }
+        catch (Exception)
+        {
+            TempData["SaveSearchMessage"] = "We couldn't save your search right now. Please try again later.";
+        } 
+        
+        // Back to the same results
+        SavedSearch current = new SavedSearch();
+        current.Cuisines = cuisines;
+        current.Location = location;
+        return Redirect(Url.Action("Search") + current.QueryString());
+    }
+
+    // Removes one saved search (by its position in the list), then back to the home page.
+    [HttpPost]
+    public IActionResult RemoveSearch(int index)
+    {
+        if (HttpContext.Session.GetInt32("UserID") == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        try
+        {
+            int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+            UserHistory history = UserHistory.Load(userID);
+            if (history.RemoveSearch(index))
+            {
+                history.Save(userID);
+                TempData["HistoryMessage"] = "Saved search removed.";
+            }
+            else
+            {
+                TempData["HistoryMessage"] = "That saved search doesn't exist anymore.";
+            }
+        }
+        catch (Exception)
+        {
+            TempData["HistoryMessage"] = "We couldn't remove that search right now. Please try again later.";
+        }
+
+        return RedirectToAction("Index");
     }
 }

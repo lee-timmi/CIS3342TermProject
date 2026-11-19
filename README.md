@@ -92,6 +92,7 @@ Project 2 rebuilt in **ASP.NET Core MVC** with Razor Views. The site now runs on
 | Forgot username / reset password (1 random security question) + SPs | D. Accounts and Login | Thimmy (Tri's item) | ✅ Tue 11/17 |
 | Sentiment model: train + test (ML.NET, 79.15% accuracy on held-back reviews) | K. Learning Opportunities | Thimmy | ✅ Thu 11/19 |
 | Positive / negative badge on reviews + "% positive" on the profile (edited reviews re-labeled; trainer fills in any missing) | K. Learning Opportunities | Thimmy | ✅ Thu 11/19 |
+| Saved searches + recently viewed (System.Text.Json serialization into TP_UserHistory) | J. Serialization | Thimmy | ✅ Thu 11/19 |
 
 ---
 

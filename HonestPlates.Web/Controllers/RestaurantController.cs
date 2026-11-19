@@ -337,6 +337,21 @@ namespace HonestPlates.Web.Controllers
                 return View();
             }
 
+            // Recently viewed (serialization): only for logged-in users. Separate try, so it never breaks the profile.
+            if (HttpContext.Session.GetInt32("UserID") != null)
+            {
+                try
+                {
+                    int userID = Convert.ToInt32(HttpContext.Session.GetInt32("UserID"));
+                    UserHistory.RecordView(userID, id, restaurant.Name);
+                }
+                catch (Exception)
+                {
+                    // If the history can't be saved, the profile still shows normally
+                }
+            }
+
+
             // Reviews + the rating summary. Separate try, so if they fail the details still show.
             // Came from Project 2: RestaurantProfile.aspx.cs loading reviews in its own try/catch.
             try
