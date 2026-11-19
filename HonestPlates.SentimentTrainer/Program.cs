@@ -77,7 +77,7 @@ namespace HonestPlates.SentimentTrainer
             {
                 "The food was amazing and the staff are lovely.",
                 "Cold fries, obnoxious waiter, never coming back.",
-                "It was okay, nothing special.",
+                "The food fine. It's okay.",
                 "It took so long for the food to arrive, but food was worth it."
             };
 
@@ -85,6 +85,11 @@ namespace HonestPlates.SentimentTrainer
             {
                 Console.WriteLine(Sentiment.Predict(sample) + " | " + sample);
             }
+
+            // Label every review in the database that doesn't have a label yet
+            Console.WriteLine();
+            int labeled = Review.LabelMissingReviews();
+            Console.WriteLine("Labeled " + labeled + " reviews in the database that had no sentiment yet.");
 
         }
     }

@@ -107,7 +107,15 @@ namespace HonestPlates.Data.Models
             cmd.Parameters.AddWithValue("@VisitDateTime", VisitDateTime);
             cmd.Parameters.AddWithValue("@RemovePhoto", RemovePhoto);
 
-            return db.DoUpdateUsingCmdObj(cmd) > 0;
+            bool saved = db.DoUpdateUsingCmdObj(cmd) > 0;
+
+            // TP_UpdateReview clears old label for the new test (ML.NET)
+            if (saved)
+            {
+                SaveSentiment(ReviewID, ReviewText);
+            }
+
+            return saved;
         }
 
         // Deletes one review, only if this user wrote it. Returns false if nothing was deleted.
@@ -121,6 +129,71 @@ namespace HonestPlates.Data.Models
             cmd.Parameters.AddWithValue("@UserID", userID);
 
             return db.DoUpdateUsingCmdObj(cmd) > 0;
+        }
+
+        // Labels a review's text with the ML.NET model and saves the label (TP_SaveSentiment).
+        public string SaveSentiment(int reviewID, string reviewText)
+        {
+            string label = Sentiment.Predict(reviewText);
+
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_SaveSentiment";
+            cmd.Parameters.AddWithValue("@ReviewID", reviewID);
+            cmd.Parameters.AddWithValue("@Sentiment", label);
+
+            db.DoUpdateUsingCmdObj(cmd);
+            return label;
+        }
+
+        // Labels every review that has no sentiment yet (TP_GetReviewsWithoutSentiment). Returns how many were labeled.
+        public static int LabelMissingReviews()
+        {
+            int count = 0;
+            DBConnect db = new DBConnect();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "TP_GetReviewsWithoutSentiment";
+            DataSet ds = db.GetDataSetUsingCmdObj(cmd);
+
+            Review review = new Review();
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                int reviewID = Convert.ToInt32(row["ReviewID"]);
+                string label = review.SaveSentiment(reviewID, row["ReviewText"].ToString());
+                if (label != "")
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        // The share of labeled reviews that are Positive, as a whole number (82 = 82%).
+        public static int PercentPositive(DataTable reviews)
+        {
+            int labeled = 0;
+            int positive = 0;
+
+            foreach (DataRow row in reviews.Rows)
+            {
+                if (row["Sentiment"] != DBNull.Value)
+                {
+                    labeled++;
+                    if (row["Sentiment"].ToString() == "Positive")
+                    {
+                        positive++;
+                    }
+                }
+            }
+
+            if (labeled == 0)
+            {
+                return -1;
+            }
+            return (int)Math.Round(positive * 100.0 / labeled);
         }
 
         // Fill ImageData and ImageType. Return false when review has no photo

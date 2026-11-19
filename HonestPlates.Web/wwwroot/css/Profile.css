@@ -408,3 +408,34 @@
     color: #8a7258;
     margin-bottom: 0.25rem;
 }
+
+/* Sentiment (ML.NET): the "% positive" line and the badge on each review. */
+.sentiment-summary {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.9rem;
+    color: #5a4a3a;
+    margin: 0.4rem 0 0;
+    padding: 0.15rem 0.6rem;
+}
+
+.sentiment-summary strong {
+    color: #2e7d4f;
+}
+
+.sentiment-positive {
+    color: #2e7d4f;
+    background: #e3f2e8;
+}
+
+.sentiment-negative {
+    color: #c43030;
+    background: #fbe7e7;
+}
+
+.sentiment-badge {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+}

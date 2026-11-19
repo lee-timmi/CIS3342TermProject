@@ -159,6 +159,17 @@ else
             <div class="avg-item"><span class="avg-label">Price</span><span class="avg-value">@rating.PriceSigns()</span></div>
         </div>
         <p class="avg-count">Based on @rating.ReviewCount review(s)</p>
+
+        @* Overall sentiment from the ML.NET model. Hidden when no review has a label yet.
+           Came from Murach's ASP.NET Core MVC, Chapter 7 Page 233 on inline conditional statements. *@
+        @{
+            int percentPositive = Review.PercentPositive(reviews);
+         }
+        @if (percentPositive >= 0)
+         {
+            <p class="sentiment-summary"><strong>@percentPositive%</strong> of reviews are positive</p>
+         }
+
     </div>
 
     foreach (DataRow review in reviews.Rows)
@@ -167,6 +178,12 @@ else
             <div class="review-header">
                 <span class="review-author">@Review.ReviewerName(review)</span>
                 <span class="review-date">@Convert.ToDateTime(review["ReviewDate"]).ToString("MMMM d, yyyy")</span>
+
+                @if (review["Sentiment"] != DBNull.Value)
+                {
+                    string sentimentLabel = review["Sentiment"].ToString();
+                    <span class="sentiment-badge sentiment-@sentimentLabel.ToLower()">@sentimentLabel</span>
+                }
             </div>
 
             @if (review["VisitDateTime"] != DBNull.Value)
